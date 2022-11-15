@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 export default function Signin() {
   let navigate = useNavigate();
   const KAKAO_AUTH_URL =
-    "https://kauth.kakao.com/oauth/authorize?client_id=fc231655583778a23c2eba6fcbd54a3f&redirect_uri=http://localhost:8080/mapmory/callbackKakao&response_type=code";
+    "https://kauth.kakao.com/oauth/authorize?client_id=fc231655583778a23c2eba6fcbd54a3f&redirect_uri=http://localhost:3000/mapmory/callbackKakao&response_type=code";
 
   const handleLogin = () => {
     window.location.href = KAKAO_AUTH_URL;
@@ -54,10 +54,11 @@ export default function Signin() {
               fullWidth
               autoComplete='current-password'
             ></TextField>
+
+            {/* 카카오로 로그인하기 */}
             <Link onClick={handleLogin} style={{ cursor: "pointer" }}>
               <p>카카오로 바로 시작</p>
             </Link>
-
             <FormControlLabel
               control={<Checkbox value='remember' color='primary'></Checkbox>}
               label='날 기억해줘!'

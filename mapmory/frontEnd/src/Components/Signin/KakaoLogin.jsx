@@ -9,13 +9,14 @@ export default function KakaoLogin() {
   const KAKAO_CODE = location.search.split("=")[1];
 
   useEffect(() => {
-    fetch(`http://localhost:8080/mapmory/callbackKakao?code=${KAKAO_CODE}`, {
+    fetch(`http://localhost:3000/mapmory/callbackKakao?code=${KAKAO_CODE}`, {
       method: "GET",
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         localStorage.setItem("token", data.token);
-        navigate("/");
+        navigate("/map");
       });
   }, []);
 
@@ -27,10 +28,12 @@ export default function KakaoLogin() {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         if (data.access_token) {
           localStorage.setItem("token", data.access_token);
+          navigate("/map");
         } else {
-          navigate("/");
+          navigate("/signin");
         }
       });
   };
@@ -40,5 +43,5 @@ export default function KakaoLogin() {
     getKakaoToken();
   }, []);
 
-  return <div>KakaoLogin</div>;
+  return <></>;
 }

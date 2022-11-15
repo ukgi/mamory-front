@@ -11,6 +11,7 @@ import RoomIcon from "@mui/icons-material/Room";
 // import Register from "../../Components/Register/Register";
 // import Login from "../../Components/Signin/Login";
 import { Link as LinkR } from "react-router-dom";
+import DiaryNavBar from "../diary/diaryNavBar/DiaryNavBar";
 
 export default function Map() {
   // const myStorage = window.localStorage;
@@ -110,6 +111,7 @@ export default function Map() {
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
+      <DiaryNavBar />
       <ReactMapGL
         {...viewport}
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}

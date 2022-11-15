@@ -10,6 +10,7 @@ import KakaoLogin from "./Components/Signin/KakaoLogin";
 import Write from "./pages/diary/write/Write";
 // kakao map 을 위해 map 박스 잠시 보류
 import Map from "./pages/map/Map";
+
 // import KakaoMap from "./pages/map/KakaoMap";
 
 function App() {
