@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
@@ -21,12 +22,25 @@
         color: inherit;
       }
     </style>
-
     <title>React App</title>
+    <!-- EXIF 스크립트 -->
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/exif-js"
+    ></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- ⬇️ 카카오 지도 api 라이브러리 -->
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=acec8bcf2aa9c6045b97d1adb3ca47a6&libraries=LIBRARY"
+    ></script>
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=acec8bcf2aa9c6045b97d1adb3ca47a6&libraries=services"
+    ></script>
     <script
       type="text/javascript"
       src="//dapi.kakao.com/v2/maps/sdk.js?appkey=acec8bcf2aa9c6045b97d1adb3ca47a6&libraries=services,clusterer"

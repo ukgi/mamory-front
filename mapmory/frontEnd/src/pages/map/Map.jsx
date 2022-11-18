@@ -1,93 +1,91 @@
 import "./map.css";
 import ReactMapGL, { Marker, Popup } from "react-map-gl";
 import { useState } from "react";
-
 import RoomIcon from "@mui/icons-material/Room";
-// import { useEffect, useState } from "react";
-// import axios from "axios";
-// import * as timeago from "timeago.js";
-// import TimeAgo from "timeago-react";
-// import pt_BR from "timeago.js/lib/lang/pt_BR";
-// import Register from "../../Components/Register/Register";
-// import Login from "../../Components/Signin/Login";
+import axios from "axios";
+import * as timeago from "timeago.js";
+import TimeAgo from "timeago-react";
+import pt_BR from "timeago.js/lib/lang/pt_BR";
+import Register from "../../Components/Register/Register";
+import Login from "../../Components/Signin/Login";
 import { Link as LinkR } from "react-router-dom";
 import DiaryNavBar from "../diary/diaryNavBar/DiaryNavBar";
 
 export default function Map() {
-  // const myStorage = window.localStorage;
-  // timeago.register("pt_BR", pt_BR);
-  // const [currentUsername, setCurrentUsername] = useState(
-  //   myStorage.getItem("user")
-  // );
-  // const [pins, setPins] = useState([]);
-  // const [currentPlaceId, setCurrentPlaceId] = useState(null);
-  // const [newPlace, setNewPlace] = useState(null);
-  // const [title, setTitle] = useState(null);
-  // const [desc, setDesc] = useState(null);
-  // const [viewport, setViewport] = useState({
-  //   latitude: 37.5666805,
-  //   longitude: 126.9784147,
-  //   zoom: 4,
-  // });
-  // const [showRegister, setShowRegister] = useState(false);
-  // const [showLogin, setShowLogin] = useState(false);
+  const myStorage = window.localStorage;
+  timeago.register("pt_BR", pt_BR);
+  const [currentUsername, setCurrentUsername] = useState(
+    myStorage.getItem("user")
+  );
+  const [pins, setPins] = useState([]);
+  const [currentPlaceId, setCurrentPlaceId] = useState(null);
+  const [newPlace, setNewPlace] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [desc, setDesc] = useState(null);
+  const [viewport, setViewport] = useState({
+    latitude: 37.5666805,
+    longitude: 126.9784147,
+    zoom: 4,
+  });
+  const [showRegister, setShowRegister] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
-  // const handleMarkerClick = (id, lat, long) => {
-  //   setCurrentPlaceId(id);
-  //   setViewport({ ...viewport, latitude: lat, longitude: long });
-  // };
+  const handleMarkerClick = (id, lat, long) => {
+    setCurrentPlaceId(id);
+    setViewport({ ...viewport, latitude: lat, longitude: long });
+  };
 
-  // // 더블클릭 시 새로운 장소 추가 가능
-  // const handleAddClick = (e) => {
-  //   const [longitude, latitude] = e.lngLat;
-  //   setNewPlace({
-  //     lat: latitude,
-  //     long: longitude,
-  //   });
-  // };
+  // 더블클릭 시 새로운 장소 추가 가능
+  const handleAddClick = (e) => {
+    const [longitude, latitude] = e.lngLat;
+    setNewPlace({
+      lat: latitude,
+      long: longitude,
+    });
+  };
 
-  // // 새로운 핀 추가
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const newPin = {
-  //     username: currentUsername,
-  //     title,
-  //     desc,
-  //     lat: newPlace.lat,
-  //     long: newPlace.long,
-  //   };
+  // 새로운 핀 추가
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newPin = {
+      username: currentUsername,
+      title,
+      desc,
+      lat: newPlace.lat,
+      long: newPlace.long,
+    };
 
-  //   try {
-  //     const res = await axios.post("/pins", newPin);
-  //     setPins([...pins, res.data]);
-  //     setNewPlace(null);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+    try {
+      const res = await axios.post("/pins", newPin);
+      setPins([...pins, res.data]);
+      setNewPlace(null);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  // // 핀 삭제
-  // const handleDelete = (e) => {
-  //   console.log(e);
-  // };
+  // 핀 삭제
+  const handleDelete = (e) => {
+    console.log(e);
+  };
 
-  // // 모든 핀 데이터 가져와서 지도 위에 표시
-  // useEffect(() => {
-  //   const getPins = async () => {
-  //     try {
-  //       const allPins = await axios.get("/pins");
-  //       setPins(allPins.data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   getPins();
-  // }, []);
+  // 모든 핀 데이터 가져와서 지도 위에 표시
+  useEffect(() => {
+    const getPins = async () => {
+      try {
+        const allPins = await axios.get("/pins");
+        setPins(allPins.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getPins();
+  }, []);
 
-  // const handleLogout = () => {
-  //   setCurrentUsername(null);
-  //   myStorage.removeItem("user");
-  // };
+  const handleLogout = () => {
+    setCurrentUsername(null);
+    myStorage.removeItem("user");
+  };
   const pinId = 123;
   const userState = true;
   const [markerState, setmarkerState] = useState(true);
