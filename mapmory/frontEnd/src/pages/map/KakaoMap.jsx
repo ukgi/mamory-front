@@ -1,3 +1,12 @@
+import * as React from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import { Button, TextField } from '@mui/material';
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import Container from "@mui/material/Container";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { useState } from "react";
 import "./map.css";
@@ -9,6 +18,7 @@ const seoulLat = 37.5666805;
 const seoulLng = 126.9784147;
 
 export default function KakaoMap() {
+  const [open, setOpen] = useState(false);
   const [mapCenter, setMapCenter] = useState({
     center: {
       lat: seoulLat,
@@ -93,14 +103,55 @@ export default function KakaoMap() {
       </Map>
 
       {/* 이미지 입력 */}
-      <input
-        type='file'
-        id='uploadFile'
-        onChange={uploadImgPreview}
-        accept='image/*'
-      />
-      <br />
-      <img id='thumbnailImg' src='' width='300' />
+      
+      <Button variant="outlined" onClick={()=>{
+        setOpen(true);
+      }}>작성하기</Button>
+      <Dialog open={open}>
+        <DialogTitle>사진과 함께 다이어리를 작성해 보세요</DialogTitle>
+        <DialogContent>
+            <Container component='main' maxWidth='xs'>
+                <Box conponent='form' sx={{'& .MuiTextField-root': { m: 3, width: '35ch' },}}>
+                    <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                        id='title'
+                        label='Title'
+                        variant='filled'
+                        multiline
+                        color="success"
+                        autoComplete='title-name'
+                        ></TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                        id='content'
+                        label='Content'
+                        variant='filled'
+                        multiline
+                        color="success"
+                        ></TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <input
+                        type='file'
+                        id='uploadFile'
+                        onChange={uploadImgPreview}
+                        accept='image/*'
+                        />
+                        <br />
+                        <img id='thumbnailImg' src='' width='300' />
+                    </Grid>
+                    </Grid>
+                </Box>
+            </Container>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={()=>{
+            setOpen(false);
+          }}>Create</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
