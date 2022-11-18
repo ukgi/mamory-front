@@ -9,7 +9,7 @@ import Signup from "./Components/Register/Register";
 import KakaoLogin from "./Components/Signin/KakaoLogin";
 import Write from "./pages/diary/write/Write";
 // kakao map 을 위해 map 박스 잠시 보류
-import Map from "./pages/map/Map";
+// import Map from "./pages/map/Map";
 
 import KakaoMap from "./pages/map/KakaoMap";
 
@@ -21,7 +21,7 @@ function App() {
         <Route path='/signin' element={<Signin />} exact />
         <Route path='/signup' element={<Signup />} exact />
         <Route path='/mapmory/callbackKakao' element={<KakaoLogin />}></Route>
-        <Route path='/map' element={<Map />} exact />
+        <Route path='/map' element={<KakaoMap />} exact />
         <Route path='/diary/posts' element={<Posts />}></Route>
         <Route path='/diary/single-post' element={<Single />}></Route>
         <Route path='/diary/write' element={<Write />}></Route>
