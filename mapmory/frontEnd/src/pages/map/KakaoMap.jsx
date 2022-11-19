@@ -35,6 +35,7 @@ export default function KakaoMap() {
   });
   const [markers, setMarkers] = useState([
     {
+      key: null,
       position: {
         lat: null,
         lng: null,
@@ -45,6 +46,7 @@ export default function KakaoMap() {
   // 📛 마커 position 정보, 서버로 post 하기
   const submitMarkerPosition = async () => {
     const newMarker = {
+      key: markers.key,
       position: markers.position,
     };
     try {
@@ -106,6 +108,7 @@ export default function KakaoMap() {
         setMarkers([
           ...markers,
           {
+            key: wtmX - wtmY,
             position: {
               lat: wtmX,
               lng: wtmY,
@@ -147,6 +150,7 @@ export default function KakaoMap() {
     e.preventDefault();
     const newForm = {
       username: currentUser,
+      // id: memberId,
       image,
       title,
       content,
@@ -178,11 +182,12 @@ export default function KakaoMap() {
             (
               <MapMarker
                 // 💦💦 key 값을 어떻게 서버로 넘겨주지 ??
-                key={`${marker.position}-${index}`}
+                key={marker.key}
                 position={marker.position} // 마커를 표시할 위치
                 clickable={true}
               ></MapMarker>
-            )
+            ),
+            console.log("마커", marker.key)
           )
         )}
       </Map>
