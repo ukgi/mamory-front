@@ -50,7 +50,7 @@ export default function KakaoMap() {
       position: markers.position,
     };
     try {
-      const res = await axios.post("서버URL", newMarker);
+      const res = await axios.post("/marker/new", newMarker);
       setMarkers([...res.markers]);
     } catch (err) {
       console.log(err);
@@ -69,6 +69,24 @@ export default function KakaoMap() {
     };
     getMarkers();
   }, []);
+
+  // 📛 서버에게 axios.post로 폼 데이터를 보내는 코드
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newForm = {
+      username: currentUser,
+      // id: memberId,
+      image,
+      title,
+      content,
+    };
+    try {
+      const res = await axios.put("서버 URL", newForm);
+      setMarkers([...markers, res.data]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // ✅ 사진에서 메타데이터 추출 후, 지도 위에 마커 표시하는 함수
   function uploadImgPreview() {
@@ -125,7 +143,9 @@ export default function KakaoMap() {
           },
         });
       });
+      // ✅ 파일의 URL을 Base64형태로 가져온다
       document.getElementById("thumbnailImg").src = reader.result;
+      console.log("base64 인코딩", reader.result);
     };
     if (fileInfo) {
       // ✅ readAsDataURL( )을 통해 파일의 URL을 읽어온다.
@@ -144,24 +164,6 @@ export default function KakaoMap() {
     //   }
     // };
   }
-
-  // 📛 서버에게 axios.post로 폼 데이터를 보내는 코드
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newForm = {
-      username: currentUser,
-      // id: memberId,
-      image,
-      title,
-      content,
-    };
-    try {
-      const res = await axios.post("서버 URL", newForm);
-      setMarkers([...markers, res.data]);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   return (
     <>
@@ -187,7 +189,7 @@ export default function KakaoMap() {
                 clickable={true}
               ></MapMarker>
             ),
-            console.log("마커", marker.key)
+            console.log("마커 key", marker.key)
           )
         )}
       </Map>
@@ -270,7 +272,6 @@ export default function KakaoMap() {
         <form onSubmit={handleSubmit}>
           <label>Image</label>
           <input
-            name='image'
             type='file'
             id='uploadFile'
             onChange={uploadImgPreview}
@@ -278,6 +279,7 @@ export default function KakaoMap() {
           />
           <br />
           <img
+            name='image'
             id='thumbnailImg'
             src=''
             width='300'
