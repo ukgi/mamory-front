@@ -70,27 +70,42 @@ export default function KakaoMap() {
     getMarkers();
   }, []);
 
-  // 📛 서버에게 axios.post로 폼 데이터를 보내는 코드
+  // 📛 서버에게 폼 데이터를 보내는 코드
+  // ✔️ 만일 fileInfo가 서버로 보내지지 않으면 전역 변수로 바꿔보기
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newForm = {
-      username: currentUser,
-      // id: memberId,
-      image,
-      title,
-      content,
-    };
-    try {
-      const res = await axios.put("서버 URL", newForm);
-      setMarkers([...markers, res.data]);
-    } catch (err) {
-      console.log(err);
+    const fileInfo = document.getElementById("uploadFile").files[0];
+    let formData = new FormData();
+    formData.append("image", fileInfo);
+    formData.append("title", title);
+    formData.append("content", content);
+    // ✅ 폼 객체 key 와 value 값을 순회.
+    let entries = formData.entries();
+    for (const pair of entries) {
+      console.log(pair[0] + ", " + pair[1]);
     }
+
+    fetch("서버 url", {
+      method: "PUT",
+      cache: "no-cache",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      });
+    // ✅ 마커 위도 경도값 서버로 post 요청
+    submitMarkerPosition();
   };
 
   // ✅ 사진에서 메타데이터 추출 후, 지도 위에 마커 표시하는 함수
-  function uploadImgPreview() {
+  function ToExtractImageMetaData() {
     const fileInfo = document.getElementById("uploadFile").files[0];
+    // ✅ image input이 onChange가 되면, setImage에 input에 들어온 image 넣어준다.
+    // ✅ 여기서 fileInfo는 image input에 추가된 이미지 객체이다.
+    // setImage(fileInfo);
+    // console.log("image 객체 정보", image);
+
     const reader = new FileReader();
     // ✅ readAsDataURL( ) 을 통해 파일의 URL을 읽어오면 onload 실행
     reader.onload = function () {
@@ -134,8 +149,6 @@ export default function KakaoMap() {
           },
         ]);
 
-        submitMarkerPosition();
-
         setMapCenter({
           center: {
             lat: wtmX,
@@ -145,7 +158,7 @@ export default function KakaoMap() {
       });
       // ✅ 파일의 URL을 Base64형태로 가져온다
       document.getElementById("thumbnailImg").src = reader.result;
-      console.log("base64 인코딩", reader.result);
+      // console.log("base64 인코딩", reader.result);
     };
     if (fileInfo) {
       // ✅ readAsDataURL( )을 통해 파일의 URL을 읽어온다.
@@ -177,38 +190,19 @@ export default function KakaoMap() {
         }}
         level={4} // 지도의 확대 레벨
       >
-        {markers.map(
-          (marker, index) => (
-            console.log(markers),
-            console.log(marker.position),
-            (
-              <MapMarker
-                // 💦💦 key 값을 어떻게 서버로 넘겨주지 ??
-                key={marker.key}
-                position={marker.position} // 마커를 표시할 위치
-                clickable={true}
-              ></MapMarker>
-            ),
-            console.log("마커 key", marker.key)
-          )
-        )}
+        {markers.map((marker, index) => (
+          // console.log(markers),
+          // console.log(marker.position),
+          <MapMarker
+            // 💦💦 key 값을 어떻게 서버로 넘겨주지 ??
+            key={marker.key}
+            position={marker.position} // 마커를 표시할 위치
+            clickable={true}
+          ></MapMarker>
+          // console.log("마커 key", marker.key)
+        ))}
       </Map>
 
-      {/* 이미지 및 다이어리 입력 */}
-      {/* <form>
-        <input
-          name='image'
-          type='file'
-          id='uploadFile'
-          onChange={uploadImgPreview}
-          accept='image/*'
-        />
-        <br />
-        <img id='thumbnailImg' src='' width='300' />
-        <input type='text' placeholder='제목' name='title' />
-        <input type='text' placeholder='간단한 다이어리 작성' name='diary' />
-        <button type='submit'>등록하기</button>
-      </form> */}
       <Button
         variant='outlined'
         onClick={() => {
@@ -274,7 +268,7 @@ export default function KakaoMap() {
           <input
             type='file'
             id='uploadFile'
-            onChange={uploadImgPreview}
+            onChange={ToExtractImageMetaData}
             accept='image/*'
           />
           <br />
