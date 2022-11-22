@@ -3,7 +3,7 @@ import Dialog from "@mui/material/Dialog";
 // import DialogTitle from "@mui/material/DialogTitle";
 // import DialogContent from "@mui/material/DialogContent";
 // import DialogActions from "@mui/material/DialogActions";
-import { Button, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 // import Box from "@mui/material/Box";
 // import Grid from "@mui/material/Grid";
 // import Container from "@mui/material/Container";
@@ -13,67 +13,62 @@ import "./map.css";
 // import { Link as LinkR } from "react-router-dom";
 import EXIF from "exif-js";
 import { useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 
 const seoulLat = 37.5666805;
 const seoulLng = 126.9784147;
 
 export default function KakaoMap() {
   const currentUser = "chanuk";
-
+  const memberId = "123456";
   // ✅ "작성하기" 버튼 클릭 -> 다이어리 폼으로 이동
   const [open, setOpen] = useState(false);
-  // const [newPlace, setNewPlace] = useState(null);
-  const [image, setImage] = useState(null);
-  const [title, setTitle] = useState(null);
-  const [content, setContent] = useState(null);
   const [mapCenter, setMapCenter] = useState({
     center: {
       lat: seoulLat,
       lng: seoulLng,
     },
   });
-  const [markers, setMarkers] = useState([
-    {
-      key: null,
-      position: {
-        lat: null,
-        lng: null,
-      },
+  const [image, setImage] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [content, setContent] = useState(null);
+
+  const [markerList, setMarkerList] = useState([]);
+  const [newMarker, setNewMarker] = useState({
+    key: null,
+    position: {
+      lat: null,
+      lng: null,
     },
-  ]);
+  });
 
   // 📛 마커 position 정보, 서버로 post 하기
-  const submitMarkerPosition = async () => {
-    const newMarker = {
-      key: markers.key,
-      position: markers.position,
-    };
-    try {
-      const res = await axios.post("/marker/new", newMarker);
-      setMarkers([...res.markers]);
-    } catch (err) {
-      console.log(err);
-    }
+  const submitMarkerPosition = async (wtmX, wtmY) => {
+    fetch("http://localhost:8000/marker/new", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        memberId,
+        latitude: wtmX,
+        longtitude: wtmY,
+      }),
+    });
   };
 
   // 📛 서버로부터 저장된 마커 데이터 가져오기
   useEffect(() => {
-    const getMarkers = async () => {
-      try {
-        const res = await axios.get("서버로부터 저장된 마커 데이터 가져오기");
-        setMarkers(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getMarkers();
+    fetch("data/markerPosition.json")
+      .then((response) => response.json())
+      .then((data) => setMarkerList(data));
   }, []);
 
   // 📛 서버에게 폼 데이터를 보내는 코드
   // ✔️ 만일 fileInfo가 서버로 보내지지 않으면 전역 변수로 바꿔보기
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // 📛 서버에서 response로 마커 위도 경도 json 파일을 넘겨줘야 한다 !!
+  const handleFormSubmit = async () => {
+    // e.preventDefault();
     const fileInfo = document.getElementById("uploadFile").files[0];
     let formData = new FormData();
     formData.append("image", fileInfo);
@@ -84,18 +79,19 @@ export default function KakaoMap() {
     for (const pair of entries) {
       console.log(pair[0] + ", " + pair[1]);
     }
-
     fetch("서버 url", {
       method: "PUT",
       cache: "no-cache",
       body: formData,
     })
       .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      });
-    // ✅ 마커 위도 경도값 서버로 post 요청
-    submitMarkerPosition();
+      .then(
+        (data) => (
+          console.log(data),
+          setMarkerList([...markerList, data]),
+          setNewMarker(null)
+        )
+      );
   };
 
   // ✅ 사진에서 메타데이터 추출 후, 지도 위에 마커 표시하는 함수
@@ -121,14 +117,14 @@ export default function KakaoMap() {
         // console.dir(exifLongRef);
         // console.dir(exifLatRef);
 
-        if (exifLatRef == "N") {
+        if (exifLatRef === "N") {
           var latitude =
             exifLat[0] * -1 + (exifLat[1] * -60 + exifLat[2] * -1) / 3600;
         } else {
           var latitude = exifLat[0] + (exifLat[1] * 60 + exifLat[2]) / 3600;
         }
 
-        if (exifLongRef == "E") {
+        if (exifLongRef === "E") {
           var longitude =
             exifLong[0] * -1 + (exifLong[1] * -60 + exifLong[2] * -1) / 3600;
         } else {
@@ -138,16 +134,12 @@ export default function KakaoMap() {
         let wtmX = Math.abs(latitude);
         let wtmY = Math.abs(longitude);
 
-        setMarkers([
-          ...markers,
-          {
-            key: wtmX - wtmY,
-            position: {
-              lat: wtmX,
-              lng: wtmY,
-            },
+        setNewMarker({
+          position: {
+            lat: wtmX,
+            lng: wtmY,
           },
-        ]);
+        });
 
         setMapCenter({
           center: {
@@ -155,7 +147,11 @@ export default function KakaoMap() {
             lng: wtmY,
           },
         });
+
+        // ✅ 마커 위도 경도 값 서버로 보내기
+        submitMarkerPosition(wtmX, wtmY);
       });
+
       // ✅ 파일의 URL을 Base64형태로 가져온다
       document.getElementById("thumbnailImg").src = reader.result;
       // console.log("base64 인코딩", reader.result);
@@ -164,23 +160,11 @@ export default function KakaoMap() {
       // ✅ readAsDataURL( )을 통해 파일의 URL을 읽어온다.
       reader.readAsDataURL(fileInfo);
     }
-
-    // const submitLatLng = async () => {
-    //   const newLatLng = {
-    //     lat: wtmX,
-    //     lng: wtmY,
-    //   };
-    //   try {
-    //     const res = await axios.post("서버 URL", newLatLng);
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // };
   }
 
   return (
     <>
-      <Map // 지도를 표시할 Container
+      <Map
         id='map'
         center={mapCenter.center}
         style={{
@@ -188,18 +172,15 @@ export default function KakaoMap() {
           width: "100%",
           height: "450px",
         }}
-        level={4} // 지도의 확대 레벨
+        level={8} // 지도의 확대 레벨
       >
-        {markers.map((marker, index) => (
-          // console.log(markers),
-          // console.log(marker.position),
+        {markerList.map((marker, index) => (
           <MapMarker
-            // 💦💦 key 값을 어떻게 서버로 넘겨주지 ??
-            key={marker.key}
-            position={marker.position} // 마커를 표시할 위치
+            key={`${marker}-${index}`}
+            position={marker}
             clickable={true}
           ></MapMarker>
-          // console.log("마커 key", marker.key)
+          // ,console.log("new marker", marker)
         ))}
       </Map>
 
@@ -212,58 +193,7 @@ export default function KakaoMap() {
         작성하기
       </Button>
       <Dialog open={open}>
-        {/* <DialogTitle>사진과 함께 다이어리를 작성해 보세요</DialogTitle>
-        <DialogContent>
-          <Container component='main' maxWidth='xs'>
-            <Box
-              component='form'
-              sx={{ "& .MuiTextField-root": { m: 3, width: "35ch" } }}
-            >
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    id='title'
-                    label='Title'
-                    variant='filled'
-                    multiline
-                    color='success'
-                    autoComplete='title-name'
-                  ></TextField>
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    id='content'
-                    label='Content'
-                    variant='filled'
-                    multiline
-                    color='success'
-                  ></TextField>
-                </Grid>
-                <Grid item xs={12}>
-                  <input
-                    type='file'
-                    id='uploadFile'
-                    onChange={uploadImgPreview}
-                    accept='image/*'
-                  />
-                  <br />
-                  <img id='thumbnailImg' src='' width='300' />
-                </Grid>
-              </Grid>
-            </Box>
-          </Container>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            variant='outlined'
-            onClick={() => {
-              setOpen(false);
-            }}
-          >
-            Create
-          </Button>
-        </DialogActions> */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleFormSubmit}>
           <label>Image</label>
           <input
             type='file'
