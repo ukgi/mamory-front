@@ -96,7 +96,7 @@ const Navbar = ({ toggle }) => {
           </NavMenu>
           <NavBtn>
             <NavBtnLink to='/signin'>로그인</NavBtnLink>
-            <NavBtnLink to='/register'>회원가입</NavBtnLink>
+            <NavBtnLink to='/signup'>회원가입</NavBtnLink>
           </NavBtn>
         </NavbarContainer>
       </Nav>

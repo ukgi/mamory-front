@@ -9,9 +9,57 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { Checkbox, TextField, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+
 
 export default function Signup() {
   let navigate = useNavigate();
+  let [email, setEmail] = useState("");
+  let [password, setPassword] = useState("");
+  let [nickname, setNickname] = useState("");
+  const [button, setButton] = useState(true);
+
+  const onEamilHandler = (e) => {
+    setEmail(e.currentTarget.value);
+  }
+
+  const onPasswordHandler = (e) => {
+    setPassword(e.currentTarget.value);
+  }
+
+  const onNicknameHandler = (e) => {
+    setNickname(e.currentTarget.value);
+  }
+
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+    console.log('email', email);
+    console.log('password', password);
+    console.log('nickname', nickname);
+
+    let body = {
+      email: email,
+      password: password,
+      nickname: nickname,
+    }
+    console.log(body)
+
+    axios.post("/", body)
+    .then((res) => {
+      console.log(res.data)
+    })
+  }
+
+  const goToMain = () => {
+    navigate('/');
+  }
+
+  //유효성 검사
+  const changeButton = () => {
+    email.includes('@') && password.length >= 6 && nickname.length >= 6 ? setButton(false) :setButton(true);
+  }
+
   return (
     <div className='Signup'>
       <Container component='main' maxWidth='xs'>
@@ -29,46 +77,45 @@ export default function Signup() {
           <Typography component='h1' variant='h5'>
             Sign up
           </Typography>
-          <Box conponent='form' noValidate sx={{ mt: 3 }}>
+          <Box component='form' onSubmit={onSubmitHandler} noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete='given-name'
-                  name='firstName'
-                  label='First Name'
-                  required
-                  fullWidth
-                  autoFocus
-                ></TextField>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete='family-name'
-                  name='lasttName'
-                  label='Last Name'
-                  required
-                  fullWidth
-                ></TextField>
-              </Grid>
               <Grid item xs={12}>
                 <TextField
                   autoComplete='email'
                   name='email'
-                  label='Email Address'
+                  // label='Email Address'
+                  placeholder="Email Address"
                   required
                   fullWidth
+                  onChange={onEamilHandler}
+                  onKeyUp={changeButton}
                 ></TextField>
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   autoComplete='new-password'
                   name='password'
-                  label='Password'
+                  // label='Password'
+                  placeholder="Password"
                   required
                   fullWidth
+                  onChange={onPasswordHandler}
+                  onKeyUp={changeButton}
                 ></TextField>
               </Grid>
               <Grid item xs={12}>
+                <TextField
+                  autoComplete='nickname'
+                  name='nickname'
+                  // label='Nickname'
+                  placeholder="Nickname"
+                  required
+                  fullWidth
+                  onChange={onNicknameHandler}
+                  onKeyUp={changeButton}
+                ></TextField>
+              </Grid>
+              {/* <Grid item xs={12}>
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -78,11 +125,12 @@ export default function Signup() {
                   }
                   label='혹시 이메일로 광고받을래?'
                 ></FormControlLabel>
-              </Grid>
+              </Grid> */}
               <Button
                 type='submit'
                 fullWidth
                 variant='contained'
+                disabled={button}
                 sx={{ mt: 3, mb: 2, bgcolor: "#f7e600", color: "success.main" }}
               >
                 SIGN UP

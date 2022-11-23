@@ -1,9 +1,9 @@
-import * as React from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import { Button, TextField } from '@mui/material';
+import * as React from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import { Button, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
@@ -13,14 +13,17 @@ import "./map.css";
 import { Link as LinkR } from "react-router-dom";
 import EXIF from "exif-js";
 import { useEffect } from "react";
-import axios from 'axios';
+import axios from "axios";
 
 const seoulLat = 37.5666805;
 const seoulLng = 126.9784147;
 
 export default function KakaoMap() {
+  const currentUser = "chanuk";
+
+  // ✅ "작성하기" 버튼 클릭 -> 다이어리 폼으로 이동
   const [open, setOpen] = useState(false);
-  //dialog 열렸는지 확인하는 변수
+  // const [newPlace, setNewPlace] = useState(null);
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState(null);
   const [content, setContent] = useState(null);
@@ -30,13 +33,17 @@ export default function KakaoMap() {
       lng: seoulLng,
     },
   });
-  const [markers, setMarkers] = useState({
-    key: null,
-    position: {
-      lat: null,
-      lng: null,
+
+  const [markers, setMarkers] = useState([
+    {
+      key: null,
+      position: {
+        lat: null,
+        lng: null,
+      },
     },
-  });
+  ]);
+
 
   // 📛 마커 position 정보, 서버로 post 하기
   const submitMarkerPosition = async () => {
@@ -64,8 +71,8 @@ export default function KakaoMap() {
     };
     getMarkers();
   }, []);
-  
 
+  // ✅ 사진에서 메타데이터 추출 후, 지도 위에 마커 표시하는 함수
   function uploadImgPreview() {
     const fileInfo = document.getElementById("uploadFile").files[0];
     const reader = new FileReader();
@@ -100,7 +107,8 @@ export default function KakaoMap() {
         let wtmX = Math.abs(latitude); //Math.abs() 절대값변환
         let wtmY = Math.abs(longitude);
 
-        setMarker([
+
+        setMarkers([
           ...markers,
           {
             key: wtmX - wtmY,
@@ -108,7 +116,9 @@ export default function KakaoMap() {
               lat: wtmX,
               lng: wtmY,
             },
-        }]);
+
+          },
+        ]);
 
         submitMarkerPosition();
 
@@ -119,31 +129,74 @@ export default function KakaoMap() {
           },
         });
       });
+      document.getElementById("thumbnailImg").src = reader.result;
     };
     if (fileInfo) {
       // ✅ readAsDataURL( )을 통해 파일의 URL을 읽어온다.
       reader.readAsDataURL(fileInfo);
     }
 
-    // 📛 서버에게 axios.post로 폼 데이터를 보내는 코드
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const newForm = {
-      username: currentUser,
-      // id: memberId,
-      image,
-      title,
-      content,
-    };
-    try {
-      const res = await axios.post("서버 URL", newForm);
-      setMarkers([...markers, res.data]);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+
+    // const submitLatLng = async () => {
+    //   const newLatLng = {
+    //     lat: wtmX,
+    //     lng: wtmY,
+    //   };
+    //   try {
+    //     const res = await axios.post("서버 URL", newLatLng);
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // };
   }
 
+  // 📛 서버에게 axios.post로 폼 데이터를 보내는 코드
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const newForm = {
+  //     username: currentUser,
+  //     // id: memberId,
+  //     image,
+  //     title,
+  //     content,
+  //   };
+  //   try {
+  //     const res = await axios.post("서버 URL", newForm);
+  //     setMarkers([...markers, res.data]);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  const onhandlePost = async (data) => {
+    const { title, content, image } = data;
+    const postData = { title, content, image }
+
+    //post
+    await axios
+    .post('/map', postData)
+    .then(function(response) {
+      setMarkers([...markers, response.data]);
+      console.log(response, '성공');
+
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const diaryData = {
+      title: data.get('title'),
+      content: data.get('content'),
+      image: data.get('image'),
+    };
+    const { title, content, image } = diaryData;
+    console.log(diaryData);
+    onhandlePost(diaryData);
+  }
 
   return (
     <>
