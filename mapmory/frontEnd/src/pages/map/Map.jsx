@@ -1,165 +1,221 @@
-// import "./map.css";
-// import ReactMapGL, { Marker, Popup } from "react-map-gl";
-// import { useState } from "react";
-// import RoomIcon from "@mui/icons-material/Room";
-// import axios from "axios";
-// import * as timeago from "timeago.js";
-// import TimeAgo from "timeago-react";
-// import pt_BR from "timeago.js/lib/lang/pt_BR";
-// import Register from "../../Components/Register/Register";
-// import Login from "../../Components/Signin/Login";
-// import { Link as LinkR } from "react-router-dom";
-// import DiaryNavBar from "../diary/diaryNavBar/DiaryNavBar";
+import "./app.css";
+import ReactMapGL, { Marker, Popup } from "react-map-gl";
+import { useEffect, useState } from "react";
+import { Room, Star, StarBorder } from "@material-ui/icons";
+import axios from "axios";
+import { format } from "timeago.js";
+import Register from "./components/Register";
+import Login from "./components/Login";
 
-// export default function Map() {
-//   const myStorage = window.localStorage;
-//   timeago.register("pt_BR", pt_BR);
-//   const [currentUsername, setCurrentUsername] = useState(
-//     myStorage.getItem("user")
-//   );
-//   const [pins, setPins] = useState([]);
-//   const [currentPlaceId, setCurrentPlaceId] = useState(null);
-//   const [newPlace, setNewPlace] = useState(null);
-//   const [title, setTitle] = useState(null);
-//   const [desc, setDesc] = useState(null);
-//   const [viewport, setViewport] = useState({
-//     latitude: 37.5666805,
-//     longitude: 126.9784147,
-//     zoom: 4,
-//   });
-//   const [showRegister, setShowRegister] = useState(false);
-//   const [showLogin, setShowLogin] = useState(false);
+function App() {
+  const myStorage = window.localStorage;
+  const [currentUsername, setCurrentUsername] = useState(
+    myStorage.getItem("user")
+  );
+  const [pins, setPins] = useState([]);
+  const [currentPlaceId, setCurrentPlaceId] = useState(null);
+  const [newPlace, setNewPlace] = useState(null);
+  const [title, setTitle] = useState(null);
+  const [desc, setDesc] = useState(null);
+  const [star, setStar] = useState(0);
+  const [viewport, setViewport] = useState({
+    latitude: 47.040182,
+    longitude: 17.071727,
+    zoom: 4,
+  });
+  const [showRegister, setShowRegister] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
-//   const handleMarkerClick = (id, lat, long) => {
-//     setCurrentPlaceId(id);
-//     setViewport({ ...viewport, latitude: lat, longitude: long });
-//   };
+  const handleMarkerClick = (id, lat, long) => {
+    setCurrentPlaceId(id);
+    setViewport({ ...viewport, latitude: lat, longitude: long });
+  };
 
-//   // 더블클릭 시 새로운 장소 추가 가능
-//   const handleAddClick = (e) => {
-//     const [longitude, latitude] = e.lngLat;
-//     setNewPlace({
-//       lat: latitude,
-//       long: longitude,
-//     });
-//   };
+  const handleAddClick = (e) => {
+    const [longitude, latitude] = e.lngLat;
+    setNewPlace({
+      lat: latitude,
+      long: longitude,
+    });
+  };
 
-//   // 새로운 핀 추가
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     const newPin = {
-//       username: currentUsername,
-//       title,
-//       desc,
-//       lat: newPlace.lat,
-//       long: newPlace.long,
-//     };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newPin = {
+      username: currentUsername,
+      title,
+      desc,
+      rating: star,
+      lat: newPlace.lat,
+      long: newPlace.long,
+    };
 
-//     try {
-//       const res = await axios.post("/pins", newPin);
-//       setPins([...pins, res.data]);
-//       setNewPlace(null);
-//     } catch (err) {
-//       console.log(err);
-//     }
-//   };
+    try {
+      const res = await axios.post("/pins", newPin);
+      setPins([...pins, res.data]);
+      setNewPlace(null);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-//   // 핀 삭제
-//   const handleDelete = (e) => {
-//     console.log(e);
-//   };
+  useEffect(() => {
+    const getPins = async () => {
+      try {
+        const allPins = await axios.get("/pins");
+        setPins(allPins.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getPins();
+  }, []);
 
-//   // 모든 핀 데이터 가져와서 지도 위에 표시
-//   useEffect(() => {
-//     const getPins = async () => {
-//       try {
-//         const allPins = await axios.get("/pins");
-//         setPins(allPins.data);
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     };
-//     getPins();
-//   }, []);
+  const handleLogout = () => {
+    setCurrentUsername(null);
+    myStorage.removeItem("user");
+  };
 
-//   const handleLogout = () => {
-//     setCurrentUsername(null);
-//     myStorage.removeItem("user");
-//   };
-//   const pinId = 123;
-//   const userState = true;
-//   const [markerState, setmarkerState] = useState(true);
-//   const [viewport, setViewport] = useState({
-//     width: 400,
-//     height: 400,
-//     latitude: 37.541,
-//     longitude: 126.986,
-//     zoom: 10,
-//   });
-//   const [currentPlacedId, setCurrentPlaceId] = useState(null);
-//   const handleMarkerClick = (id) => {
-//     setCurrentPlaceId(id);
-//   };
+  return (
+    <div style={{ height: "100vh", width: "100%" }}>
+      <ReactMapGL
+        {...viewport}
+        mapboxApiAccessToken=''
+        width='100%'
+        height='100%'
+        transitionDuration='200'
+        mapStyle='mapbox://styles/safak/cknndpyfq268f17p53nmpwira'
+        onViewportChange={(viewport) => setViewport(viewport)}
+        onDblClick={currentUsername && handleAddClick}
+      >
+        {pins.map((p) => (
+          <>
+            <Marker
+              latitude={p.lat}
+              longitude={p.long}
+              offsetLeft={-3.5 * viewport.zoom}
+              offsetTop={-7 * viewport.zoom}
+            >
+              <Room
+                style={{
+                  fontSize: 7 * viewport.zoom,
+                  color:
+                    currentUsername === p.username ? "tomato" : "slateblue",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleMarkerClick(p._id, p.lat, p.long)}
+              />
+            </Marker>
+            {p._id === currentPlaceId && (
+              <Popup
+                key={p._id}
+                latitude={p.lat}
+                longitude={p.long}
+                closeButton={true}
+                closeOnClick={false}
+                onClose={() => setCurrentPlaceId(null)}
+                anchor='left'
+              >
+                <div className='card'>
+                  <label>Place</label>
+                  <h4 className='place'>{p.title}</h4>
+                  <label>Review</label>
+                  <p className='desc'>{p.desc}</p>
+                  <label>Rating</label>
+                  <div className='stars'>
+                    {Array(p.rating).fill(<Star className='star' />)}
+                  </div>
+                  <label>Information</label>
+                  <span className='username'>
+                    Created by <b>{p.username}</b>
+                  </span>
+                  <span className='date'>{format(p.createdAt)}</span>
+                </div>
+              </Popup>
+            )}
+          </>
+        ))}
+        {newPlace && (
+          <>
+            <Marker
+              latitude={newPlace.lat}
+              longitude={newPlace.long}
+              offsetLeft={-3.5 * viewport.zoom}
+              offsetTop={-7 * viewport.zoom}
+            >
+              <Room
+                style={{
+                  fontSize: 7 * viewport.zoom,
+                  color: "tomato",
+                  cursor: "pointer",
+                }}
+              />
+            </Marker>
+            <Popup
+              latitude={newPlace.lat}
+              longitude={newPlace.long}
+              closeButton={true}
+              closeOnClick={false}
+              onClose={() => setNewPlace(null)}
+              anchor='left'
+            >
+              <div>
+                <form onSubmit={handleSubmit}>
+                  <label>Title</label>
+                  <input
+                    placeholder='Enter a title'
+                    autoFocus
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                  <label>Description</label>
+                  <textarea
+                    placeholder='Say us something about this place.'
+                    onChange={(e) => setDesc(e.target.value)}
+                  />
+                  <label>Rating</label>
+                  <select onChange={(e) => setStar(e.target.value)}>
+                    <option value='1'>1</option>
+                    <option value='2'>2</option>
+                    <option value='3'>3</option>
+                    <option value='4'>4</option>
+                    <option value='5'>5</option>
+                  </select>
+                  <button type='submit' className='submitButton'>
+                    Add Pin
+                  </button>
+                </form>
+              </div>
+            </Popup>
+          </>
+        )}
+        {currentUsername ? (
+          <button className='button logout' onClick={handleLogout}>
+            Log out
+          </button>
+        ) : (
+          <div className='buttons'>
+            <button className='button login' onClick={() => setShowLogin(true)}>
+              Log in
+            </button>
+            <button
+              className='button register'
+              onClick={() => setShowRegister(true)}
+            >
+              Register
+            </button>
+          </div>
+        )}
+        {showRegister && <Register setShowRegister={setShowRegister} />}
+        {showLogin && (
+          <Login
+            setShowLogin={setShowLogin}
+            setCurrentUsername={setCurrentUsername}
+            myStorage={myStorage}
+          />
+        )}
+      </ReactMapGL>
+    </div>
+  );
+}
 
-//   const deletePin = () => {
-//     if (pinId === currentPlacedId) {
-//       setmarkerState(false);
-//     }
-//   };
-
-//   return (
-//     <div style={{ height: "100vh", width: "100%" }}>
-//       <DiaryNavBar />
-//       <ReactMapGL
-//         {...viewport}
-//         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX}
-//         width='100%'
-//         height='100%'
-//         transitionDuration='200'
-//         mapStyle='mapbox://styles/safak/cknndpyfq268f17p53nmpwira'
-//         onViewportChange={(nextViewport) => setViewport(nextViewport)}
-//       >
-//         {userState && markerState && (
-//           <Marker
-//             latitude={37.541}
-//             longitude={126.986}
-//             offsetLeft={-20}
-//             offsetTop={-20}
-//           >
-//             <RoomIcon
-//               style={{ fontSize: viewport.zoom * 5, color: "slateblue" }}
-//               onClick={() => handleMarkerClick(pinId)}
-//             />
-//           </Marker>
-//         )}
-
-//         {userState && markerState && pinId === currentPlacedId && (
-//           <Popup
-//             latitude={37.541}
-//             longitude={126.986}
-//             closeButton={true}
-//             closeOnClick={false}
-//             anchor='left'
-//             onClose={() => setCurrentPlaceId(null)}
-//           >
-//             <div className='card'>
-//               <label>장소</label>
-//               <h4>용산시청</h4>
-//               <LinkR className='cardBtn' to='/diary/posts'>
-//                 다이어리로 이동하기
-//               </LinkR>
-//               <label>정보</label>
-//               <span className='username'>
-//                 Created by <b>박찬욱</b>
-//               </span>
-//               <span className='date'>1시간 전에 작성됨</span>
-//             </div>
-//             <button className='delete' onClick={deletePin}>
-//               마커 삭제하기
-//             </button>
-//           </Popup>
-//         )}
-//       </ReactMapGL>
-//     </div>
-//   );
-// }
+export default App;
