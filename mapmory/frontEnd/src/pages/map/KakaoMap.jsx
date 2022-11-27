@@ -40,6 +40,7 @@ const cancelBtn = {
 
 export default function KakaoMap() {
   const currentUser = "chanuk";
+
   const memberId = "123456";
   // ✅ "작성하기" 버튼 클릭 -> 다이어리 폼으로 이동
   const [open, setOpen] = useState(false);
@@ -63,6 +64,8 @@ export default function KakaoMap() {
   });
   // const [markerKey, setMarkerKey] = useState(null);
   const [doubleClickMap, setDoubleClickMap] = useState(false);
+  const [diary, setDiary] = useState({});
+
   // ✅ 마커 position 정보, 서버로 post 하기
   const submitMarkerPosition = async (wtmX, wtmY) => {
     await fetch("http://localhost:8000/marker/new", {
@@ -209,6 +212,15 @@ export default function KakaoMap() {
     }
   }
 
+  // ✅ 마커 클릭 시, 해당하는 마커의 다이어리 정보 요청
+  const handleDiaryScreen = async () => {
+    await fetch("data/diary.json")
+      .then((response) => response.json())
+      .then((data) => setDiary(data))
+      .catch((error) => console.log(error));
+    setViewDiary(true);
+  };
+
   return (
     <>
       <Map
@@ -227,9 +239,7 @@ export default function KakaoMap() {
             key={`${markerPosition}-${index}`}
             position={markerPosition}
             clickable={true}
-            onClick={() => {
-              setViewDiary(true);
-            }}
+            onClick={handleDiaryScreen}
           ></MapMarker>
           // ,console.log("new marker", markerPosition)
         ))}
@@ -313,7 +323,7 @@ export default function KakaoMap() {
           </Dialog>
         )}
         {/* ✅ 마커 클릭 시, 다이어리 화면이 나온다 */}
-        {viewDiary && (
+        {viewDiary && diary && (
           <Dialog open={viewDiary}>
             <Button>
               <CancelPresentationIcon
@@ -321,7 +331,7 @@ export default function KakaoMap() {
                 onClick={() => setViewDiary(false)}
               />
             </Button>
-            <DialogTitle className='diaryTitle'>성수 카페거리</DialogTitle>
+            <DialogTitle className='diaryTitle'>{diary.title}</DialogTitle>
             <DialogContent>
               <Container component='main' maxWidth='xs'>
                 <Box
@@ -333,15 +343,12 @@ export default function KakaoMap() {
                       <img
                         name='image'
                         id='thumbnailImg'
-                        src='https://korean.miceseoul.com/humanframe/theme/mice/assets/images/spot/img_spot_view_04_0.jpg'
+                        src={diary.image}
                         width='300'
                       />
                     </Grid>
                     <Grid item xs={12}>
-                      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                      Laboriosam quisquam eum magni sint quo. Modi, voluptas
-                      nam. Quasi eligendi voluptates tempora reprehenderit odio
-                      ducimus! Facere nobis laboriosam tempora in accusantium!
+                      {diary.content}
                     </Grid>
                   </Grid>
                 </Box>
@@ -349,6 +356,7 @@ export default function KakaoMap() {
             </DialogContent>
           </Dialog>
         )}
+
         <Button
           className='makeDiaryBtn'
           variant='outlined'
@@ -437,41 +445,6 @@ export default function KakaoMap() {
               Create
             </Button>
           </DialogActions>
-
-          {/* <form onSubmit={handleFormSubmit}>
-            <label>Image</label>
-            <input
-              type='file'
-              id='uploadFile'
-              onChange={ToExtractImageMetaData}
-              accept='image/*'
-            />
-            <br />
-            <img
-              name='image'
-              id='thumbnailImg'
-              src=''
-              width='300'
-              onChange={(e) => setImage(e.target.value)}
-            />
-            <label>Title</label>
-            <input
-              type='text'
-              placeholder='제목'
-              name='title'
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <label>content</label>
-            <input
-              type='text'
-              placeholder='간단한 다이어리 작성'
-              name='content'
-              onChange={(e) => setContent(e.target.value)}
-            />
-            <button className='submitButton' type='submit'>
-              등록하기
-            </button>
-          </form> */}
         </Dialog>
       </Map>
     </>
