@@ -48,12 +48,13 @@ export default function Signup() {
     axios.post("/", body)
     .then((res) => {
       console.log(res.data)
+      navigate('/');
     })
   }
 
-  const goToMain = () => {
-    navigate('/');
-  }
+  // const goToMain = () => {
+  //   navigate('/');
+  // }
 
   //유효성 검사
   const changeButton = () => {
