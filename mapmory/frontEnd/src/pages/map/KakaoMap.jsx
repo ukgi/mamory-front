@@ -41,7 +41,7 @@ const cancelBtn = {
 export default function KakaoMap() {
   const currentUser = "chanuk";
 
-  const memberId = "123456";
+  const memberId = 123456;
   // ✅ "작성하기" 버튼 클릭 -> 다이어리 폼으로 이동
   const [open, setOpen] = useState(false);
   const [mapCenter, setMapCenter] = useState({
@@ -56,6 +56,7 @@ export default function KakaoMap() {
   const [viewDiary, setViewDiary] = useState(false);
   const [markerList, setMarkerList] = useState([]);
   const [newMarker, setNewMarker] = useState({
+    markerId: null,
     key: null,
     position: {
       lat: null,
@@ -65,6 +66,7 @@ export default function KakaoMap() {
   // const [markerKey, setMarkerKey] = useState(null);
   const [doubleClickMap, setDoubleClickMap] = useState(false);
   const [diary, setDiary] = useState({});
+  const [currentMarkerId, setCurrentMarkerId] = useState(null);
 
   // ✅ 마커 position 정보, 서버로 post 하기
   const submitMarkerPosition = async (wtmX, wtmY) => {
@@ -78,12 +80,31 @@ export default function KakaoMap() {
         latitude: wtmX,
         longtitude: wtmY,
       }),
-    });
+    })
+      // 📛 markerId 받아오기
+      .then((response) => response.json())
+      .then((data) => {
+        setNewMarker({
+          markerId: data,
+          position: {
+            lat: wtmX,
+            lng: wtmY,
+          },
+        });
+
+        setMapCenter({
+          center: {
+            lat: wtmX,
+            lng: wtmY,
+          },
+        });
+        setCurrentMarkerId(data);
+      });
   };
 
   // ✅ 서버로부터 저장된 마커 데이터 가져오기
   useEffect(() => {
-    fetch("data/markerPosition.json")
+    fetch(`http://localhost:8000/${memberId}/markers`)
       .then((response) => response.json())
       .then((data) => setMarkerList(data));
   }, []);
@@ -109,14 +130,17 @@ export default function KakaoMap() {
       console.log(pair[0] + ", " + pair[1]);
     }
 
-    await fetch("http://localhost:8000/123456/marker/12/diary", {
-      method: "PUT",
-      cache: "no-cache",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      body: formData,
-    })
+    await fetch(
+      `http://localhost:8000/${memberId}/marker/${currentMarkerId}/diary`,
+      {
+        method: "POST",
+        cache: "no-cache",
+        headers: {
+          // "Content-Type": "multipart/form-data",
+        },
+        body: formData,
+      }
+    )
       .then((response) => response.json())
       .then(
         (data) => (
@@ -142,9 +166,8 @@ export default function KakaoMap() {
     setDoubleClickMap(true);
   };
 
-  // 📛 마커 클릭 시, 다이어리 보여주기
-
   // ✅ 사진에서 메타데이터 추출 후, 지도 위에 마커 표시하는 함수
+  // 자동 생성이 아니더라도 메타 데이터 추출 시도는 됨 -> 😡 단, 오류가 뜰꺼야
   function ToExtractImageMetaData() {
     const fileInfo = document.getElementById("uploadFile").files[0];
     console.log(fileInfo);
@@ -184,19 +207,19 @@ export default function KakaoMap() {
         let wtmX = Math.abs(latitude);
         let wtmY = Math.abs(longitude);
 
-        setNewMarker({
-          position: {
-            lat: wtmX,
-            lng: wtmY,
-          },
-        });
+        // setNewMarker({
+        //   position: {
+        //     lat: wtmX,
+        //     lng: wtmY,
+        //   },
+        // });
 
-        setMapCenter({
-          center: {
-            lat: wtmX,
-            lng: wtmY,
-          },
-        });
+        // setMapCenter({
+        //   center: {
+        //     lat: wtmX,
+        //     lng: wtmY,
+        //   },
+        // });
 
         // ✅ 마커 위도 경도 값 서버로 보내기
         submitMarkerPosition(wtmX, wtmY);
@@ -213,8 +236,10 @@ export default function KakaoMap() {
   }
 
   // ✅ 마커 클릭 시, 해당하는 마커의 다이어리 정보 요청
-  const handleDiaryScreen = async () => {
-    await fetch("data/diary.json")
+  const handleDiaryScreen = async (markerId) => {
+    console.log(markerId);
+    // setCurrentMarkerId(markerId);
+    await fetch(`http://localhost:8000/${memberId}/marker/${markerId}/diary`)
       .then((response) => response.json())
       .then((data) => setDiary(data))
       .catch((error) => console.log(error));
@@ -234,14 +259,20 @@ export default function KakaoMap() {
         level={8} // 지도의 확대 레벨
         onDoubleClick={addMarker}
       >
-        {markerList.map((markerPosition, index) => (
+        {markerList.map((marker, index) => (
           <MapMarker
-            key={`${markerPosition}-${index}`}
-            position={markerPosition}
+            key={`${marker}-${index}`}
+            // markerId={marker.markerId}
+            position={{
+              lng: marker.lng,
+              lat: marker.lat,
+            }}
             clickable={true}
-            onClick={handleDiaryScreen}
+            onClick={() => {
+              handleDiaryScreen(marker.markerId);
+            }}
           ></MapMarker>
-          // ,console.log("new marker", markerPosition)
+          // ,console.log("new marker", marker)
         ))}
         {/* ⬇️ 지도 더블 클릭하면, 새로운 팝업 창이 나옴 */}
         {newMarker && (
