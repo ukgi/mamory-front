@@ -261,6 +261,19 @@ export default function KakaoMap() {
       >
         {markerList.map((marker, index) => (
           <MapMarker
+            image={{
+              src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png",
+              size: {
+                width: 64,
+                height: 69,
+              },
+              options: {
+                offset: {
+                  x: 27,
+                  y: 69,
+                }, // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+              },
+            }}
             key={`${marker}-${index}`}
             // markerId={marker.markerId}
             position={{
@@ -333,6 +346,7 @@ export default function KakaoMap() {
                     </Grid>
                     <Grid item xs={20}>
                       <TextField
+                        rows={4}
                         required
                         id='content'
                         label='Content'
@@ -458,6 +472,7 @@ export default function KakaoMap() {
                   </Grid>
                   <Grid item xs={20}>
                     <TextField
+                      rows={4}
                       required
                       id='content'
                       label='Content'

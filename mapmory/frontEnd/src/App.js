@@ -5,10 +5,6 @@ import Home from "./pages/Home";
 import Signin from "./Components/Signin/Login";
 import Signup from "./Components/Register/Register";
 import KakaoLogin from "./Components/Signin/KakaoLogin";
-
-// kakao map 을 위해 map 박스 잠시 보류
-// import Map from "./pages/map/Map";
-
 import KakaoMap from "./pages/map/KakaoMap";
 
 function App() {
