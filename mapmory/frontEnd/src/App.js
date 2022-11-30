@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Signin from "./Components/Signin/Login";
 import Signup from "./Components/Register/Register";
-import KakaoLogin from "./Components/Signin/KakaoLogin";
 import KakaoMap from "./pages/map/KakaoMap";
 
 function App() {
@@ -14,7 +13,6 @@ function App() {
         <Route path='/' element={<Home />} exact />
         <Route path='/signin' element={<Signin />} exact />
         <Route path='/register' element={<Signup />} exact />
-        <Route path='/mapmory/callbackKakao' element={<KakaoLogin />}></Route>
         <Route path='/map' element={<KakaoMap />} exact />
       </Routes>
     </Router>

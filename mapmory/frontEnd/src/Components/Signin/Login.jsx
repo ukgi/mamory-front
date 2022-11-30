@@ -180,7 +180,7 @@ export default function Signin() {
                   underline='none'
                   component='button'
                   onClick={() => {
-                    navigate("/signup");
+                    navigate("/register");
                   }}
                   // to='/signup'
                 >
