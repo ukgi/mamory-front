@@ -81,7 +81,7 @@ export default function KakaoMap() {
         longtitude: wtmY,
       }),
     })
-      // 📛 markerId 받아오기
+      // ✅ markerId 받아오기
       .then((response) => response.json())
       .then((data) => {
         setNewMarker({
@@ -431,7 +431,11 @@ export default function KakaoMap() {
               >
                 <Grid container spacing={2} className='diaryContainer'>
                   <Grid item xs={12}>
-                    <Button variant='contained' component='label'>
+                    <Button
+                      variant='contained'
+                      component='label'
+                      color='success'
+                    >
                       사진 업로드
                       <input
                         hidden
@@ -442,7 +446,7 @@ export default function KakaoMap() {
                       />
                     </Button>
                     <IconButton
-                      color='primary'
+                      color='success'
                       aria-label='upload picture'
                       component='label'
                     >
@@ -472,7 +476,12 @@ export default function KakaoMap() {
                   </Grid>
                   <Grid item xs={20}>
                     <TextField
-                      rows={4}
+                      sx={{
+                        width: { sm: 500, md: 600 },
+                        "& .MuiInputBase-root": {
+                          height: 180,
+                        },
+                      }}
                       required
                       id='content'
                       label='Content'

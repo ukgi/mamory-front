@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import CssBaseline from "@mui/material/CssBaseline";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
@@ -9,19 +10,98 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { Checkbox, TextField, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+// import { useDispatch } from 'react-redux';
+import axios from "axios";
 
 export default function Signin() {
   let navigate = useNavigate();
-  const KAKAO_AUTH_URL =
-    "https://kauth.kakao.com/oauth/authorize?client_id=fc231655583778a23c2eba6fcbd54a3f&redirect_uri=http://localhost:3000/mapmory/callbackKakao&response_type=code";
+  // const dispatch = useDispatch();
+  let [email, setEmail] = useState("");
+  let [password, setPassword] = useState("");
+  let [item, setItem] = useState();
+  const [button, setButton] = useState(true);
+  const myEmail = "tlqkf@naver.com";
+  const myPassword = "tlqkftlqkf";
 
-  const handleLogin = () => {
-    window.location.href = KAKAO_AUTH_URL;
+  const onEamilHandler = (e) => {
+    setEmail(e.currentTarget.value);
   };
+
+  const onPasswordHandler = (e) => {
+    setPassword(e.currentTarget.value);
+  };
+
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+    console.log("email", email);
+    console.log("password", password);
+
+    let body = {
+      email: email,
+      password: password,
+    };
+    console.log(body);
+    // dispatch(loginUser(body));
+
+    axios.post("/mapmory/login", body).then((res) => {
+      console.log(res.data);
+      if (res.data.code === 200) {
+        console.log("로그인");
+        axios.get("/").then((response) => {
+          localStorage.clear();
+          localStorage.setItem("member_id", response.data.member_id);
+          this.goToMain();
+          alert("로그인 성공!");
+        });
+      }
+    });
+  };
+
+  const goToMain = () => {
+    navigate("/");
+  };
+
+  //유효성 검사
+  const changeButton = () => {
+    email.includes("@") && password.length >= 6
+      ? setButton(false)
+      : setButton(true);
+  };
+
+  // const signUp = () => {
+  //   fetch('http://http://localhost:3000/signup', {
+  //   method: 'POST',
+  //   body: JSON.stringify({
+  //     email: email,
+  //     password: password,
+  //   }),
+  // })
+  //   .then(response => response.json())
+  //   .then(result => console.log('결과: ', result));
+  // };
+
+  // const signIn = () => {
+  //   fetch('http://http://localhost:3000/signin', {
+  //     method: 'POST',
+  //     body: JSON.stringify({
+  //       email: email,
+  //       password: password,
+  //     }),
+  //   })
+  //   .then(response => {
+  //     if (response.message === 'SUCCESS') {
+  //       window.localStorage.setItem('token', response.access_token);
+  //       goToMain();
+  //     } else {
+  //       alert('이메일 또는 비밀번호가 일치하지 않습니다.')
+  //     }
+  //   })
+  // }
 
   return (
     <div className='Signin'>
       <Container component='main' maxWidth='xs'>
+        <CssBaseline />
         <Box
           sx={{
             marginTop: 8,
@@ -36,29 +116,33 @@ export default function Signin() {
           <Typography component='h1' variant='h5'>
             Sign in
           </Typography>
-          <Box component='form' noValidate sx={{ mt: 1 }}>
+          <Box component='form' onSubmit={onSubmitHandler} sx={{ mt: 1 }}>
             <TextField
-              label='Email Address'
+              id='email'
+              // label='Email Address'
               name='email'
               margin='normal'
+              placeholder='email을 입력해주세요'
               required
               fullWidth
               autoComplete='email'
               autoFocus
+              onChange={onEamilHandler}
+              onKeyUp={changeButton}
             ></TextField>
             <TextField
-              label='Password'
+              id='password'
+              // label='Password'
+              placeholder='password를 입력해주세요'
               name='password'
               type='password'
+              margin='normal'
               required
               fullWidth
               autoComplete='current-password'
+              onChange={onPasswordHandler}
+              onKeyUp={changeButton}
             ></TextField>
-
-            {/* 카카오로 로그인하기 */}
-            <Link onClick={handleLogin} style={{ cursor: "pointer" }}>
-              <p>카카오로 바로 시작</p>
-            </Link>
             <FormControlLabel
               control={<Checkbox value='remember' color='primary'></Checkbox>}
               label='날 기억해줘!'
@@ -67,16 +151,29 @@ export default function Signin() {
               type='submit'
               fullWidth
               variant='contained'
+              disabled={button}
+              onClick={goToMain}
               sx={{ mt: 3, mb: 2, bgcolor: "#f7e600", color: "success.main" }}
+              // onClick={e => {
+              //   if (myEmail == email) {
+              //     if (myPassword == password) {
+              //       e.stopPropagation();
+              //       goToMain();
+              //     }
+              //   } else {
+              //     alert('이메일 혹은 비밀번호가 일치하지 않습니다.');
+              //   }
+              // }}
+              // onClick={signIn}
             >
               SIGN IN
             </Button>
             {/* mt : margin-top, mb : margin-bottom */}
             <Grid container>
               <Grid item xs>
-                <Link underline='none' component='button'>
+                {/* <Link underline='none' component='button'>
                   비밀번호가 뭐더라
-                </Link>
+                </Link> */}
               </Grid>
               <Grid item>
                 <Link
@@ -85,7 +182,7 @@ export default function Signin() {
                   onClick={() => {
                     navigate("/signup");
                   }}
-                  to='/signup'
+                  // to='/signup'
                 >
                   계정 없음 가입해
                 </Link>
