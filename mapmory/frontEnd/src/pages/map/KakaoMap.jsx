@@ -476,12 +476,7 @@ export default function KakaoMap() {
                   </Grid>
                   <Grid item xs={20}>
                     <TextField
-                      sx={{
-                        width: { sm: 500, md: 600 },
-                        "& .MuiInputBase-root": {
-                          height: 180,
-                        },
-                      }}
+                      rows={4}
                       required
                       id='content'
                       label='Content'
