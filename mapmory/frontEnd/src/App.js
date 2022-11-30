@@ -13,7 +13,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} exact />
         <Route path='/signin' element={<Signin />} exact />
-        <Route path='/signup' element={<Signup />} exact />
+        <Route path='/register' element={<Signup />} exact />
         <Route path='/mapmory/callbackKakao' element={<KakaoLogin />}></Route>
         <Route path='/map' element={<KakaoMap />} exact />
       </Routes>

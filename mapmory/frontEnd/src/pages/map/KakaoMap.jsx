@@ -154,7 +154,7 @@ export default function KakaoMap() {
       });
   };
 
-  // 📛 지도 더블 클릭 시, 마커 생성
+  // ✅ 지도 더블 클릭 시, 마커 생성
   const addMarker = (_t, mouseEvent) => {
     let lat = mouseEvent.latLng.getLat();
     let lng = mouseEvent.latLng.getLng();
@@ -388,7 +388,7 @@ export default function KakaoMap() {
                       <img
                         name='image'
                         id='thumbnailImg'
-                        src={diary.image}
+                        src={diary.imageUrl}
                         width='300'
                       />
                     </Grid>
