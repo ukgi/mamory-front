@@ -1,5 +1,4 @@
 import * as React from "react";
-import Dialog from "@mui/material/Dialog";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { useState, useEffect } from "react";
 import "./map.css";
@@ -7,6 +6,7 @@ import EXIF from "exif-js";
 // import axios from "axios";
 
 // ⬇️ MUI LIBRARY
+import Dialog from "@mui/material/Dialog";
 import { Button, TextField } from "@mui/material";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -64,7 +64,7 @@ export default function KakaoMap() {
   });
   // const [markerKey, setMarkerKey] = useState(null);
   const [doubleClickMap, setDoubleClickMap] = useState(false);
-  const [diary, setDiary] = useState({});
+  const [diary, setDiary] = useState(null);
   const [currentMarkerId, setCurrentMarkerId] = useState(null);
 
   // ✅ 마커 position 정보, 서버로 post 하기
@@ -103,7 +103,7 @@ export default function KakaoMap() {
 
   // ✅ 서버로부터 저장된 마커 데이터 가져오기
   useEffect(() => {
-    fetch(`http://localhost:8000/${memberId}/markers`)
+    fetch("data/markerPosition.json")
       .then((response) => response.json())
       .then((data) => setMarkerList(data));
   }, []);
@@ -222,7 +222,7 @@ export default function KakaoMap() {
   const handleDiaryScreen = async (markerId) => {
     console.log(markerId);
     setCurrentMarkerId(markerId);
-    await fetch(`http://localhost:8000/${memberId}/marker/${markerId}/diary`)
+    await fetch("data/diary.json")
       .then((response) => response.json())
       .then((data) => setDiary(data))
       .catch((error) => console.log(error));
@@ -284,7 +284,103 @@ export default function KakaoMap() {
           ></MapMarker>
           // ,console.log("new marker", marker)
         ))}
-        {/* ⬇️ 지도 더블 클릭하면, 새로운 팝업 창이 나옴 */}
+
+        {/* ✅ 마커 자동생성 기능 */}
+        <Button
+          className='makeDiaryBtn'
+          variant='outlined'
+          onClick={() => {
+            setOpen(true);
+          }}
+          style={makeDiaryBtn}
+        >
+          자동 생성
+        </Button>
+        <Dialog open={open}>
+          <Button>
+            <CancelPresentationIcon
+              style={cancelBtn}
+              onClick={() => setOpen(false)}
+            />
+          </Button>
+          <h1 className='diaryTitle'>
+            사진을 업로드하면 마커가 자동 생성됩니다
+          </h1>
+
+          <DialogContent>
+            <Container component='main' maxWidth='xs'>
+              <Box
+                component='form'
+                sx={{ "& .MuiTextField-root": { m: 3, width: "35ch" } }}
+              >
+                <Grid container spacing={2} className='diaryContainer'>
+                  <Grid item xs={12}>
+                    <Button
+                      variant='contained'
+                      component='label'
+                      color='success'
+                    >
+                      <span id='imgUploadBtnSpan'>사진 업로드</span>
+                      <input
+                        hidden
+                        type='file'
+                        id='uploadFile'
+                        onChange={ToExtractImageMetaData}
+                        accept='image/*'
+                      />
+                    </Button>
+                    <IconButton
+                      color='success'
+                      aria-label='upload picture'
+                      component='label'
+                    >
+                      <input required hidden accept='image/*' type='file' />
+                      <CameraAltRoundedIcon />
+                    </IconButton>
+                    <br />
+                    <img
+                      name='image'
+                      id='thumbnailImg'
+                      src=''
+                      width='300'
+                      onChange={(e) => setImage(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <input
+                      placeholder='제목'
+                      required
+                      id='title'
+                      label='Title'
+                      variant='filled'
+                      autoComplete='title-name'
+                      onChange={(e) => setTitle(e.target.value)}
+                    ></input>
+                  </Grid>
+                  <Grid item xs={20}>
+                    <textarea
+                      placeholder='다이어리'
+                      rows={4}
+                      required
+                      id='content'
+                      label='Content'
+                      variant='filled'
+                      multiline
+                      color='success'
+                      onChange={(e) => setContent(e.target.value)}
+                    ></textarea>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Container>
+          </DialogContent>
+          <DialogActions>
+            <Button variant='outlined' onClick={handleFormSubmit}>
+              마커 생성
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* ⬇️ 지도 더블 클릭하면, 마커 수동 등록 */}
         {newMarker && (
           <Dialog open={doubleClickMap}>
             <Button>
@@ -293,7 +389,7 @@ export default function KakaoMap() {
                 onClick={() => setDoubleClickMap(false)}
               />
             </Button>
-            <DialogTitle className='diaryTitle'>사진을 등록하세요</DialogTitle>
+            <h1 className='diaryTitle'>사진을 등록하세요</h1>
             <DialogContent>
               <Container component='main' maxWidth='xs'>
                 <Box
@@ -303,7 +399,7 @@ export default function KakaoMap() {
                   <Grid container spacing={2} className='diaryContainer'>
                     <Grid item xs={12}>
                       <Button variant='contained' component='label'>
-                        사진 업로드
+                        <span id='imgUploadBtnSpan'>사진 업로드</span>
                         <input
                           hidden
                           type='file'
@@ -330,7 +426,8 @@ export default function KakaoMap() {
                       />
                     </Grid>
                     <Grid item xs={12}>
-                      <TextField
+                      <input
+                        placeholder='제목'
                         required
                         id='title'
                         label='Title'
@@ -339,10 +436,11 @@ export default function KakaoMap() {
                         color='success'
                         autoComplete='title-name'
                         onChange={(e) => setTitle(e.target.value)}
-                      ></TextField>
+                      ></input>
                     </Grid>
                     <Grid item xs={20}>
-                      <TextField
+                      <textarea
+                        placeholder='다이어리'
                         rows={4}
                         required
                         id='content'
@@ -351,7 +449,7 @@ export default function KakaoMap() {
                         multiline
                         color='success'
                         onChange={(e) => setContent(e.target.value)}
-                      ></TextField>
+                      ></textarea>
                     </Grid>
                   </Grid>
                 </Box>
@@ -406,101 +504,6 @@ export default function KakaoMap() {
             </DialogContent>
           </Dialog>
         )}
-
-        <Button
-          className='makeDiaryBtn'
-          variant='outlined'
-          onClick={() => {
-            setOpen(true);
-          }}
-          style={makeDiaryBtn}
-        >
-          자동 생성
-        </Button>
-        <Dialog open={open}>
-          <Button>
-            <CancelPresentationIcon
-              style={cancelBtn}
-              onClick={() => setOpen(false)}
-            />
-          </Button>
-          <DialogTitle className='diaryTitle'>
-            사진을 업로드하면 마커가 자동 생성됩니다
-          </DialogTitle>
-
-          <DialogContent>
-            <Container component='main' maxWidth='xs'>
-              <Box
-                component='form'
-                sx={{ "& .MuiTextField-root": { m: 3, width: "35ch" } }}
-              >
-                <Grid container spacing={2} className='diaryContainer'>
-                  <Grid item xs={12}>
-                    <Button
-                      variant='contained'
-                      component='label'
-                      color='success'
-                    >
-                      사진 업로드
-                      <input
-                        hidden
-                        type='file'
-                        id='uploadFile'
-                        onChange={ToExtractImageMetaData}
-                        accept='image/*'
-                      />
-                    </Button>
-                    <IconButton
-                      color='success'
-                      aria-label='upload picture'
-                      component='label'
-                    >
-                      <input required hidden accept='image/*' type='file' />
-                      <CameraAltRoundedIcon />
-                    </IconButton>
-                    <br />
-                    <img
-                      name='image'
-                      id='thumbnailImg'
-                      src=''
-                      width='300'
-                      onChange={(e) => setImage(e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      required
-                      id='title'
-                      label='Title'
-                      variant='filled'
-                      multiline
-                      color='success'
-                      autoComplete='title-name'
-                      onChange={(e) => setTitle(e.target.value)}
-                    ></TextField>
-                  </Grid>
-                  <Grid item xs={20}>
-                    <TextField
-                      rows={4}
-                      required
-                      id='content'
-                      label='Content'
-                      variant='filled'
-                      multiline
-                      color='success'
-                      onChange={(e) => setContent(e.target.value)}
-                    ></TextField>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Container>
-          </DialogContent>
-          <DialogActions>
-            <Button variant='outlined' onClick={handleFormSubmit}>
-              Create
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Map>
     </>
   );

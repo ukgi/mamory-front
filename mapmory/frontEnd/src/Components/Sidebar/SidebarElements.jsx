@@ -51,7 +51,7 @@ export const SidebarLink = styled(LinkS)`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 2rem;
   text-decoration: none;
   list-style: none;
   transition: 0.2s ease-in-out;
@@ -76,7 +76,7 @@ export const SidebarRoute = styled(LinkR)`
   white-space: nowrap;
   padding: 16px 64px;
   color: #010606;
-  font-size: 16px;
+  font-size: 24px;
   outline: none;
   border: none;
   cursor: pointer;

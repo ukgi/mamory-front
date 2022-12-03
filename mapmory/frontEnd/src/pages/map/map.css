@@ -14,9 +14,45 @@
 .diaryTitle {
   text-align: center;
   color: rgb(173, 173, 173);
+  font-family: "Dongle", sans-serif;
+  font-size: 40px;
+  font-weight: 400;
 }
 
 .deleteMarker {
   position: absolute;
   right: -200px;
+}
+
+#imgUploadBtnSpan {
+  font-family: "Dongle", sans-serif;
+  font-size: 18px;
+}
+
+#thumbnailImg {
+  margin-top: 12px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+#title {
+  font-size: 30px;
+  border: none;
+  padding: 20px;
+  width: 80%;
+}
+
+#title:focus {
+  outline: none;
+}
+
+#content {
+  font-size: 30px;
+  border: none;
+  padding: 20px;
+  width: 80%;
+}
+
+#content:focus {
+  outline: none;
 }

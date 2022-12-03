@@ -9,7 +9,7 @@ export const Nav = styled.nav`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1rem;
+  font-size: 2rem;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -33,7 +33,7 @@ export const NavLogo = styled(LinkR)`
   color: #fff;
   justify-self: flex-start;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: 2rem;
   display: flex;
   align-items: center;
   margin-left: 24px;
@@ -101,7 +101,7 @@ export const NavBtnLink = styled(LinkR)`
   white-space: nowrap;
   padding: 10px 22px;
   color: #010606;
-  font-size: 16px;
+  font-size: 24px;
   outline: none;
   border: none;
   cursor: pointer;
