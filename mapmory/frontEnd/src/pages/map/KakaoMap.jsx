@@ -8,7 +8,7 @@ import EXIF from "exif-js";
 // ⬇️ MUI LIBRARY
 import Dialog from "@mui/material/Dialog";
 import { Button, TextField } from "@mui/material";
-import DialogTitle from "@mui/material/DialogTitle";
+// import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Box from "@mui/material/Box";
@@ -17,21 +17,12 @@ import Container from "@mui/material/Container";
 import { IconButton } from "@mui/material";
 import CameraAltRoundedIcon from "@mui/icons-material/CameraAltRounded";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
+import RoomIcon from "@mui/icons-material/Room";
 
 const seoulLat = 37.5666805;
 const seoulLng = 126.9784147;
 
 // ⬇️ style
-const makeDiaryBtn = {
-  zIndex: "999",
-  position: "absolute",
-  top: "20px",
-  right: "20px",
-  background: "#116600",
-  color: "white",
-  border: "none",
-};
-
 const cancelBtn = {
   marginLeft: "500px",
   fontSize: "2rem",
@@ -64,7 +55,7 @@ export default function KakaoMap() {
   });
   // const [markerKey, setMarkerKey] = useState(null);
   const [doubleClickMap, setDoubleClickMap] = useState(false);
-  const [diary, setDiary] = useState(null);
+  const [diary, setDiary] = useState([]);
   const [currentMarkerId, setCurrentMarkerId] = useState(null);
 
   // ✅ 마커 position 정보, 서버로 post 하기
@@ -201,7 +192,7 @@ export default function KakaoMap() {
 
         // 😡 If. 메타데이터 추출이 안된다면 ~
         if (wtmX && wtmY === false) {
-          console.log("메타데이터 추출이 안됩니다! ❌❌");
+          alert("메타데이터 추출이 안됨!");
         }
 
         // ✅ 마커 위도 경도 값 서버로 보내기
@@ -241,6 +232,12 @@ export default function KakaoMap() {
       .then((data) => setMarkerList(data))
       .then(() => setViewDiary(false))
       .catch((error) => console.log(error));
+  };
+
+  // 📛 같은 마커에 다이어리 추가
+  const addDiary = () => {
+    setDoubleClickMap(true);
+    setViewDiary(false);
   };
 
   return (
@@ -286,16 +283,29 @@ export default function KakaoMap() {
         ))}
 
         {/* ✅ 마커 자동생성 기능 */}
-        <Button
+        <RoomIcon
           className='makeDiaryBtn'
           variant='outlined'
           onClick={() => {
             setOpen(true);
           }}
-          style={makeDiaryBtn}
+          style={{
+            zIndex: "999",
+            position: "absolute",
+            top: "20px",
+            right: "20px",
+            background: "green",
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+            width: "60px",
+            height: "60px",
+            borderRadius: "50%",
+            padding: "8px",
+          }}
         >
           자동 생성
-        </Button>
+        </RoomIcon>
         <Dialog open={open}>
           <Button>
             <CancelPresentationIcon
@@ -375,7 +385,11 @@ export default function KakaoMap() {
             </Container>
           </DialogContent>
           <DialogActions>
-            <Button variant='outlined' onClick={handleFormSubmit}>
+            <Button
+              style={{ fontFamily: "Dongle", fontSize: "24px" }}
+              variant='outlined'
+              onClick={handleFormSubmit}
+            >
               마커 생성
             </Button>
           </DialogActions>
@@ -456,8 +470,12 @@ export default function KakaoMap() {
               </Container>
             </DialogContent>
             <DialogActions>
-              <Button variant='outlined' onClick={handleFormSubmit}>
-                마커 생성
+              <Button
+                style={{ fontFamily: "Dongle", fontSize: "24px" }}
+                variant='outlined'
+                onClick={handleFormSubmit}
+              >
+                다이어리 만들기
               </Button>
             </DialogActions>
           </Dialog>
@@ -471,37 +489,53 @@ export default function KakaoMap() {
                 onClick={() => setViewDiary(false)}
               />
             </Button>
-            <DialogTitle className='diaryTitle'>{diary.title}</DialogTitle>
-            <DialogContent>
-              <Container component='main' maxWidth='xs'>
-                <Box
-                  component='form'
-                  sx={{ "& .MuiTextField-root": { m: 3, width: "35ch" } }}
-                >
-                  <Grid container spacing={2} className='diaryContainer'>
-                    <Grid item xs={12}>
-                      <img
-                        name='image'
-                        id='thumbnailImg'
-                        src={diary.imageUrl}
-                        width='300'
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      {diary.content}
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Button
-                        className='deleteMarker'
-                        onClick={handleDeleteMarker}
-                      >
-                        마커 삭제
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Container>
-            </DialogContent>
+            {diary.map((d, index) => (
+              <div>
+                <div className='diaryContainer'>
+                  <div className='diaryInner'>
+                    <h1 className='diaryTitle'>{d.title}</h1>
+                    <img
+                      name='image'
+                      id='thumbnailImg'
+                      src={d.imageUrl}
+                      width='300'
+                    />
+                    <p className='diaryContent'>{d.content}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div id='BtnContainer'>
+              <Button
+                style={{
+                  color: "white",
+                  background: "tomato",
+                  width: "180px",
+                  borderRadius: "20px",
+                  fontFamily: "Dongle",
+                  fontSize: "28px",
+                  marginBottom: "8px",
+                }}
+                onClick={handleDeleteMarker}
+              >
+                마커 삭제
+              </Button>
+              <Button
+                style={{
+                  color: "white",
+                  background: "green",
+                  width: "180px",
+                  borderRadius: "20px",
+                  fontFamily: "Dongle",
+                  fontSize: "28px",
+                  marginLeft: "8px",
+                  marginBottom: "8px",
+                }}
+                onClick={addDiary}
+              >
+                다이어리 추가
+              </Button>
+            </div>
           </Dialog>
         )}
       </Map>

@@ -11,6 +11,10 @@
   text-align: center;
 }
 
+.diaryInner {
+  margin-bottom: 50px;
+}
+
 .diaryTitle {
   text-align: center;
   color: rgb(173, 173, 173);
@@ -19,9 +23,9 @@
   font-weight: 400;
 }
 
-.deleteMarker {
-  position: absolute;
-  right: -200px;
+.diaryContent {
+  padding: 5px 24px;
+  font-size: 24px;
 }
 
 #imgUploadBtnSpan {
@@ -39,7 +43,7 @@
   font-size: 30px;
   border: none;
   padding: 20px;
-  width: 80%;
+  width: 100%;
 }
 
 #title:focus {
@@ -50,9 +54,14 @@
   font-size: 30px;
   border: none;
   padding: 20px;
-  width: 80%;
+  width: 100%;
 }
 
 #content:focus {
   outline: none;
+}
+
+#BtnContainer {
+  display: flex;
+  justify-content: center;
 }
