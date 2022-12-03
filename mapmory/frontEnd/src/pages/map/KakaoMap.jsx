@@ -1,10 +1,10 @@
 import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import "./map.css";
 import EXIF from "exif-js";
-import axios from "axios";
+// import axios from "axios";
 
 // ⬇️ MUI LIBRARY
 import { Button, TextField } from "@mui/material";
@@ -37,20 +37,6 @@ const cancelBtn = {
   fontSize: "2rem",
 };
 
-const changeMarkerImgBtn = {
-  zIndex: "999",
-  position: "absolute",
-  top: "20px",
-  right: "120px",
-  background: "#116600",
-  color: "white",
-  border: "none",
-};
-
-const marginBottom = {
-  marginBottom: "20px",
-};
-
 export default function KakaoMap() {
   const currentUser = "chanuk";
 
@@ -76,14 +62,10 @@ export default function KakaoMap() {
       lng: null,
     },
   });
-
+  // const [markerKey, setMarkerKey] = useState(null);
   const [doubleClickMap, setDoubleClickMap] = useState(false);
   const [diary, setDiary] = useState({});
   const [currentMarkerId, setCurrentMarkerId] = useState(null);
-  const [markerImg, setMarkerImg] = useState(
-    "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png"
-  );
-  const [markerImgList, setMarkerImgList] = useState(false);
 
   // ✅ 마커 position 정보, 서버로 post 하기
   const submitMarkerPosition = async (wtmX, wtmY) => {
@@ -121,21 +103,13 @@ export default function KakaoMap() {
 
   // ✅ 서버로부터 저장된 마커 데이터 가져오기
   useEffect(() => {
-    // fetch(`http://localhost:8000/${memberId}/markers`)
-    //   .then((response) => response.json())
-    //   .then((data) => setMarkerList(data));
-    const getPins = async () => {
-      try {
-        const allPins = await axios.get("data/markerPosition.json");
-        setMarkerList(allPins.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getPins();
+    fetch(`http://localhost:8000/${memberId}/markers`)
+      .then((response) => response.json())
+      .then((data) => setMarkerList(data));
   }, []);
 
   // ✅ 서버에게 폼 데이터를 보내는 코드
+  // ✔️ 만일 fileInfo가 서버로 보내지지 않으면 전역 변수로 바꿔보기
   const handleFormSubmit = async () => {
     setOpen(false);
     setDoubleClickMap(false);
@@ -225,13 +199,17 @@ export default function KakaoMap() {
         let wtmX = Math.abs(latitude);
         let wtmY = Math.abs(longitude);
 
+        // 😡 If. 메타데이터 추출이 안된다면 ~
+        if (wtmX && wtmY === false) {
+          console.log("메타데이터 추출이 안됩니다! ❌❌");
+        }
+
         // ✅ 마커 위도 경도 값 서버로 보내기
         submitMarkerPosition(wtmX, wtmY);
       });
 
       // ✅ 파일의 URL을 Base64형태로 가져온다
       document.getElementById("thumbnailImg").src = reader.result;
-      setImage(document.getElementById("thumbnailImg").src);
       // console.log("base64 인코딩", reader.result);
     };
     if (fileInfo) {
@@ -243,21 +221,26 @@ export default function KakaoMap() {
   // ✅ 마커 클릭 시, 해당하는 마커의 다이어리 정보 요청
   const handleDiaryScreen = async (markerId) => {
     console.log(markerId);
-    // setCurrentMarkerId(markerId);
-    // http://localhost:8000/${memberId}/marker/${markerId}/diary
-    await fetch("data/diary.json")
+    setCurrentMarkerId(markerId);
+    await fetch(`http://localhost:8000/${memberId}/marker/${markerId}/diary`)
       .then((response) => response.json())
       .then((data) => setDiary(data))
       .catch((error) => console.log(error));
     setViewDiary(true);
   };
 
-  const handleMarkerImg = (e) => {
-    setMarkerImg(e.target.src);
-  };
-
-  const handleDeleteMarker = (e) => {
-    console.log(e.target);
+  // 📛 마커 삭제
+  const handleDeleteMarker = async () => {
+    await fetch(
+      `http://localhost:8000/${memberId}/marker/${currentMarkerId}/diary`,
+      {
+        method: "DELETE",
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => setMarkerList(data))
+      .then(() => setViewDiary(false))
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -276,7 +259,7 @@ export default function KakaoMap() {
         {markerList.map((marker, index) => (
           <MapMarker
             image={{
-              src: `${markerImg}`,
+              src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png",
               size: {
                 width: 64,
                 height: 69,
@@ -319,11 +302,7 @@ export default function KakaoMap() {
                 >
                   <Grid container spacing={2} className='diaryContainer'>
                     <Grid item xs={12}>
-                      <Button
-                        variant='contained'
-                        component='label'
-                        style={marginBottom}
-                      >
+                      <Button variant='contained' component='label'>
                         사진 업로드
                         <input
                           hidden
@@ -337,7 +316,6 @@ export default function KakaoMap() {
                         color='primary'
                         aria-label='upload picture'
                         component='label'
-                        style={marginBottom}
                       >
                         <input required hidden accept='image/*' type='file' />
                         <CameraAltRoundedIcon />
@@ -439,93 +417,6 @@ export default function KakaoMap() {
         >
           자동 생성
         </Button>
-
-        <Button
-          className='makeDiaryBtn'
-          variant='outlined'
-          style={changeMarkerImgBtn}
-          onClick={() => {
-            setMarkerImgList(true);
-          }}
-        >
-          마커 변경
-        </Button>
-        <Dialog open={markerImgList}>
-          <Button>
-            <CancelPresentationIcon
-              style={cancelBtn}
-              onClick={() => setMarkerImgList(false)}
-            />
-          </Button>
-          <DialogTitle className='diaryTitle'>
-            원하는 이미지로 마커를 변경하세요
-          </DialogTitle>
-          <DialogContent>
-            <Container component='main' maxWidth='xs'>
-              <Box sx={{ "& .MuiTextField-root": { m: 3, width: "35ch" } }}>
-                <Grid container spacing={2} className='diaryContainer'>
-                  <Grid item xs={3}>
-                    <img
-                      width='80'
-                      src='https://cdn4.iconfinder.com/data/icons/set-1/32/__1-256.png'
-                      onClick={handleMarkerImg}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <img
-                      width='80'
-                      src='https://cdn2.iconfinder.com/data/icons/business-804/24/assurance-guarantee-certified-secure-badge-256.png'
-                      onClick={handleMarkerImg}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <img
-                      width='80'
-                      src='https://cdn1.iconfinder.com/data/icons/seo-and-web-development-5/32/development_creative_idea_light_bulb-256.png'
-                      onClick={handleMarkerImg}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <img
-                      width='80'
-                      src='https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png'
-                      onClick={handleMarkerImg}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <img
-                      width='80'
-                      src='https://cdn2.iconfinder.com/data/icons/avatars-60/5985/4-Writer-64.png'
-                      onClick={handleMarkerImg}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <img
-                      width='80'
-                      src='https://cdn4.iconfinder.com/data/icons/emojis-flat-pixel-perfect/64/emoji-42-64.png'
-                      onClick={handleMarkerImg}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <img
-                      width='80'
-                      src='https://cdn2.iconfinder.com/data/icons/basic-flat-icon-set/128/map-256.png'
-                      onClick={handleMarkerImg}
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <img
-                      width='80'
-                      src='https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-arrow-down-b-256.png'
-                      onClick={handleMarkerImg}
-                    />
-                  </Grid>
-                </Grid>
-              </Box>
-            </Container>
-          </DialogContent>
-        </Dialog>
-
         <Dialog open={open}>
           <Button>
             <CancelPresentationIcon
@@ -549,7 +440,6 @@ export default function KakaoMap() {
                       variant='contained'
                       component='label'
                       color='success'
-                      style={marginBottom}
                     >
                       사진 업로드
                       <input
@@ -564,7 +454,6 @@ export default function KakaoMap() {
                       color='success'
                       aria-label='upload picture'
                       component='label'
-                      style={marginBottom}
                     >
                       <input required hidden accept='image/*' type='file' />
                       <CameraAltRoundedIcon />
