@@ -17,7 +17,9 @@ import Container from "@mui/material/Container";
 import { IconButton } from "@mui/material";
 import CameraAltRoundedIcon from "@mui/icons-material/CameraAltRounded";
 import CancelPresentationIcon from "@mui/icons-material/CancelPresentation";
-import RoomIcon from "@mui/icons-material/Room";
+// import RoomIcon from "@mui/icons-material/Room";
+import BackspaceIcon from "@mui/icons-material/Backspace";
+import MapNavbar from "../../Components/MapNavbar/MapNavbar";
 
 const seoulLat = 37.5666805;
 const seoulLng = 126.9784147;
@@ -53,10 +55,13 @@ export default function KakaoMap() {
       lng: null,
     },
   });
-  // const [markerKey, setMarkerKey] = useState(null);
   const [doubleClickMap, setDoubleClickMap] = useState(false);
   const [diary, setDiary] = useState([]);
   const [currentMarkerId, setCurrentMarkerId] = useState(null);
+  const [markerImg, setMarkerImg] = useState(
+    "https://cdn-icons-png.flaticon.com/512/447/447031.png"
+  );
+  const [markerImgList, setMarkerImgList] = useState(false);
 
   // ✅ 마커 position 정보, 서버로 post 하기
   const submitMarkerPosition = async (wtmX, wtmY) => {
@@ -94,7 +99,7 @@ export default function KakaoMap() {
 
   // ✅ 서버로부터 저장된 마커 데이터 가져오기
   useEffect(() => {
-    fetch("data/markerPosition.json")
+    fetch(`http://localhost:8000/${memberId}/markers`)
       .then((response) => response.json())
       .then((data) => setMarkerList(data));
   }, []);
@@ -213,7 +218,7 @@ export default function KakaoMap() {
   const handleDiaryScreen = async (markerId) => {
     console.log(markerId);
     setCurrentMarkerId(markerId);
-    await fetch("data/diary.json")
+    await fetch(`http://localhost:8000/${memberId}/marker/${markerId}/diary`)
       .then((response) => response.json())
       .then((data) => setDiary(data))
       .catch((error) => console.log(error));
@@ -240,8 +245,47 @@ export default function KakaoMap() {
     setViewDiary(false);
   };
 
+  // ✅ 마커 이미지 변경
+  const handleMarkerImg = (e) => {
+    setMarkerImg(e.target.src);
+  };
+
+  // ✅ 사이드바 애니메이션
+
+  const [sidebar, setSidebar] = useState(false);
+
+  const toggleSidebar = () => {
+    setSidebar((prevState) => !prevState);
+  };
   return (
     <>
+      <div>
+        <MapNavbar openSidebar={toggleSidebar} />
+        <div className={sidebar ? "sidebar sidebar--open" : "sidebar"}>
+          <li>기능들</li>
+          <li
+            className='makeDiaryBtn'
+            variant='outlined'
+            onClick={() => {
+              setOpen(true);
+            }}
+          >
+            마커 자동 생성
+          </li>
+          <li
+            onClick={() => {
+              setMarkerImgList(true);
+            }}
+          >
+            마커 이미지 바꾸기
+          </li>
+          <BackspaceIcon
+            className={sidebar ? "backdrop backdrop--open" : "backdrop"}
+            onClick={toggleSidebar}
+          ></BackspaceIcon>
+        </div>
+      </div>
+
       <Map
         id='map'
         center={mapCenter.center}
@@ -249,6 +293,7 @@ export default function KakaoMap() {
           // 지도의 크기
           width: "100vw",
           height: "100vh",
+          position: "relative",
         }}
         level={8} // 지도의 확대 레벨
         onDoubleClick={addMarker}
@@ -256,7 +301,7 @@ export default function KakaoMap() {
         {markerList.map((marker, index) => (
           <MapMarker
             image={{
-              src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png",
+              src: `${markerImg}`,
               size: {
                 width: 64,
                 height: 69,
@@ -283,7 +328,7 @@ export default function KakaoMap() {
         ))}
 
         {/* ✅ 마커 자동생성 기능 */}
-        <RoomIcon
+        {/* <RoomIcon
           className='makeDiaryBtn'
           variant='outlined'
           onClick={() => {
@@ -303,9 +348,84 @@ export default function KakaoMap() {
             borderRadius: "50%",
             padding: "8px",
           }}
-        >
-          자동 생성
-        </RoomIcon>
+        ></RoomIcon> */}
+
+        {/* ✅ 마커 이미지 변경하기 */}
+        <Dialog open={markerImgList}>
+          <Button>
+            <CancelPresentationIcon
+              style={cancelBtn}
+              onClick={() => setMarkerImgList(false)}
+            />
+          </Button>
+          <h1 className='diaryTitle'>원하는 이미지로 마커를 변경하세요</h1>
+          <DialogContent>
+            <Container component='main' maxWidth='xs'>
+              <Box sx={{ "& .MuiTextField-root": { m: 3, width: "35ch" } }}>
+                <Grid container spacing={2} className='diaryContainer'>
+                  <Grid item xs={3}>
+                    <img
+                      width='80'
+                      src='https://cdn4.iconfinder.com/data/icons/set-1/32/__1-256.png'
+                      onClick={handleMarkerImg}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <img
+                      width='80'
+                      src='https://cdn-icons-png.flaticon.com/512/5695/5695709.png'
+                      onClick={handleMarkerImg}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <img
+                      width='80'
+                      src='https://cdn-icons-png.flaticon.com/512/777/777528.png'
+                      onClick={handleMarkerImg}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <img
+                      width='80'
+                      src='https://cdn-icons-png.flaticon.com/512/8830/8830938.png'
+                      onClick={handleMarkerImg}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <img
+                      width='80'
+                      src='https://cdn2.iconfinder.com/data/icons/avatars-60/5985/4-Writer-64.png'
+                      onClick={handleMarkerImg}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <img
+                      width='80'
+                      src='https://cdn4.iconfinder.com/data/icons/emojis-flat-pixel-perfect/64/emoji-42-64.png'
+                      onClick={handleMarkerImg}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <img
+                      width='80'
+                      src='https://cdn2.iconfinder.com/data/icons/basic-flat-icon-set/128/map-256.png'
+                      onClick={handleMarkerImg}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <img
+                      width='80'
+                      src='https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-arrow-down-b-256.png'
+                      onClick={handleMarkerImg}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+            </Container>
+          </DialogContent>
+        </Dialog>
+
+        {/* ✅ 마커 자동생성 */}
         <Dialog open={open}>
           <Button>
             <CancelPresentationIcon
