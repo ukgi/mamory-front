@@ -7,6 +7,7 @@ body {
 }
 
 .map-navbar {
+  width: 100vw;
   background-color: #222f3e;
   color: #fff;
   display: flex;
@@ -18,6 +19,8 @@ body {
 
 .map-navbar .title {
   font-size: 30px;
+  display: flex;
+  align-items: center;
 }
 
 .Btn-logout {

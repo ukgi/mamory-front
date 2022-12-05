@@ -99,7 +99,8 @@ export default function KakaoMap() {
 
   // ✅ 서버로부터 저장된 마커 데이터 가져오기
   useEffect(() => {
-    fetch(`http://localhost:8000/${memberId}/markers`)
+    // `http://localhost:8000/${memberId}/markers`
+    fetch("data/markerPosition.json")
       .then((response) => response.json())
       .then((data) => setMarkerList(data));
   }, []);
@@ -218,7 +219,8 @@ export default function KakaoMap() {
   const handleDiaryScreen = async (markerId) => {
     console.log(markerId);
     setCurrentMarkerId(markerId);
-    await fetch(`http://localhost:8000/${memberId}/marker/${markerId}/diary`)
+    // `http://localhost:8000/${memberId}/marker/${markerId}/diary`
+    await fetch("data/diary.json")
       .then((response) => response.json())
       .then((data) => setDiary(data))
       .catch((error) => console.log(error));
@@ -251,7 +253,6 @@ export default function KakaoMap() {
   };
 
   // ✅ 사이드바 애니메이션
-
   const [sidebar, setSidebar] = useState(false);
 
   const toggleSidebar = () => {
@@ -621,6 +622,7 @@ export default function KakaoMap() {
                       width='300'
                     />
                     <p className='diaryContent'>{d.content}</p>
+                    <span>{d.createDate}</span>
                   </div>
                 </div>
               </div>
