@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "https://ukgi.github.io/mamory-front/static/css/main.f0f6a7a3.css",
-    "main.js": "https://ukgi.github.io/mamory-front/static/js/main.de14029f.js",
-    "static/media/video02.mp4": "https://ukgi.github.io/mamory-front/static/media/video02.96729fc163d1843b14b3.mp4",
-    "static/media/img03.png": "https://ukgi.github.io/mamory-front/static/media/img03.ee79fad6400df55578fc.png",
-    "static/media/img02.png": "https://ukgi.github.io/mamory-front/static/media/img02.bfb4c361a513db7b6089.png",
-    "static/media/posting.png": "https://ukgi.github.io/mamory-front/static/media/posting.43e3bfce26fe439f6fa3.png",
-    "index.html": "https://ukgi.github.io/mamory-front/index.html",
-    "main.f0f6a7a3.css.map": "https://ukgi.github.io/mamory-front/static/css/main.f0f6a7a3.css.map",
-    "main.de14029f.js.map": "https://ukgi.github.io/mamory-front/static/js/main.de14029f.js.map"
+    "main.css": "/mamory-front/static/css/main.f0f6a7a3.css",
+    "main.js": "/mamory-front/static/js/main.dd3818ec.js",
+    "static/media/video02.mp4": "/mamory-front/static/media/video02.96729fc163d1843b14b3.mp4",
+    "static/media/img03.png": "/mamory-front/static/media/img03.ee79fad6400df55578fc.png",
+    "static/media/img02.png": "/mamory-front/static/media/img02.bfb4c361a513db7b6089.png",
+    "static/media/posting.png": "/mamory-front/static/media/posting.43e3bfce26fe439f6fa3.png",
+    "index.html": "/mamory-front/index.html",
+    "main.f0f6a7a3.css.map": "/mamory-front/static/css/main.f0f6a7a3.css.map",
+    "main.dd3818ec.js.map": "/mamory-front/static/js/main.dd3818ec.js.map"
   },
   "entrypoints": [
     "static/css/main.f0f6a7a3.css",
-    "static/js/main.de14029f.js"
+    "static/js/main.dd3818ec.js"
   ]
 }
