@@ -15,22 +15,22 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<Home />} exact />
+        <Route path='/mamory-front' element={<Home />} exact />
         <Route
-          path='/signin'
+          path='/mamory-front/signin'
           element={<Signin setCurrentMemberId={setCurrentMemberId} />}
           exact
         />
-        <Route path='/signup' element={<Signup />} exact />
+        <Route path='/mamory-front/signup' element={<Signup />} exact />
 
         <Route
-          path='/map/:id'
+          path='/mamory-front/map/:id'
           element={<KakaoMap currentMemberId={currentMemberId} />}
           exact
         />
         {/* <Route path="/logout" element={<Logout />} exact /> */}
         <Route
-          path='/:id'
+          path='/mamory-front/:id'
           element={<Home2 setCurrentMemberId={setCurrentMemberId} />}
           exact
         />

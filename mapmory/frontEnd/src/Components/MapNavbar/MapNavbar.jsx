@@ -9,7 +9,7 @@ export default function MapNavbar({ openSidebar }) {
   const handleLogout = () => {
     localStorage.removeItem("id");
     localStorage.removeItem("nickname");
-    navigate("/");
+    navigate("/mamory-front");
   };
   return (
     <div className='map-navbar'>
