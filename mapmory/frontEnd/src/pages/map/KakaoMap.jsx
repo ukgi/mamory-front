@@ -30,8 +30,8 @@ const cancelBtn = {
   fontSize: "2rem",
 };
 
-export default function KakaoMap(currentUser) {
-  const memberId = currentUser;
+export default function KakaoMap(currentMemberId) {
+  const memberId = currentMemberId;
   // ✅ "작성하기" 버튼 클릭 -> 다이어리 폼으로 이동
   const [open, setOpen] = useState(false);
   const [mapCenter, setMapCenter] = useState({

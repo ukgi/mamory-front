@@ -9,27 +9,27 @@ import Signup from "./Components/Signup/Signup";
 import KakaoMap from "./pages/map/KakaoMap";
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentMemberId, setCurrentMemberId] = useState(null);
   return (
     <Router>
       <Routes>
         <Route path='/' element={<Home />} exact />
         <Route
           path='/signin'
-          element={<Signin setCurrentUser={setCurrentUser} />}
+          element={<Signin setCurrentMemberId={setCurrentMemberId} />}
           exact
         />
         <Route path='/signup' element={<Signup />} exact />
 
         <Route
           path='/map'
-          element={<KakaoMap currentUser={currentUser} />}
+          element={<KakaoMap currentMemberId={currentMemberId} />}
           exact
         />
         {/* <Route path="/logout" element={<Logout />} exact /> */}
         <Route
           path='/:id'
-          element={<Home2 currentUser={setCurrentUser} />}
+          element={<Home2 setCurrentMemberId={setCurrentMemberId} />}
           exact
         />
       </Routes>

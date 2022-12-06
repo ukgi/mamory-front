@@ -21,6 +21,7 @@ const HeroSection = () => {
     setHover(!hover);
   };
 
+  const userName = localStorage.getItem("nickname");
   return (
     <HeroContainer id='home'>
       <HeroBg>
@@ -34,7 +35,8 @@ const HeroSection = () => {
         </HeroP>
         <HeroBtnWrapper>
           <NavBtn>
-            <NavBtnLink to='/signin'>시작하기</NavBtnLink>
+            {userName && <NavBtnLink to='/map'>지도로 가기</NavBtnLink>}
+            {!userName && <NavBtnLink to='/signin'>시작하기</NavBtnLink>}
           </NavBtn>
         </HeroBtnWrapper>
       </HeroContent>

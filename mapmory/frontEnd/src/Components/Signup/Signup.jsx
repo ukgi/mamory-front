@@ -28,6 +28,7 @@ export default function Signup() {
 
   const onNicknameHandler = (e) => {
     setNickname(e.currentTarget.value);
+    // nickname(nickname);
   };
 
   const onSubmitHandler = (e) => {
@@ -43,13 +44,14 @@ export default function Signup() {
     };
     console.log(body);
 
-    axios.post("/", body).then((res) => {
+    axios.post("http://43.200.240.147:8000/user/signup", body).then((res) => {
       console.log(res.data);
+      goToSignin();
     });
   };
 
-  const goToMain = () => {
-    navigate("/");
+  const goToSignin = () => {
+    navigate("/signin");
   };
 
   //유효성 검사
@@ -135,7 +137,7 @@ export default function Signup() {
                 fullWidth
                 variant='contained'
                 disabled={button}
-                onClick={goToMain}
+                // onClick={goToMain}
                 sx={{ mt: 3, mb: 2, bgcolor: "#f7e600", color: "success.main" }}
               >
                 SIGN UP

@@ -10,18 +10,17 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { Checkbox, TextField, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-// import { useDispatch } from 'react-redux';
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
-export default function Signin(setCurrentUser) {
+export default function Signin({ setCurrentMemberId }) {
   let navigate = useNavigate();
-  // const dispatch = useDispatch();
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let [item, setItem] = useState();
   const [button, setButton] = useState(true);
-  const myEmail = "tlqkf@naver.com";
-  const myPassword = "tlqkftlqkf";
+  let { id } = useParams();
+  // console.log(id);
 
   const onEamilHandler = (e) => {
     setEmail(e.currentTarget.value);
@@ -41,20 +40,18 @@ export default function Signin(setCurrentUser) {
       password: password,
     };
     console.log(body);
-    // dispatch(loginUser(body));
 
-    axios.post("/mapmory/login", body).then((res) => {
+    axios.post("http://43.200.240.147:8000/user/signin", body).then((res) => {
       console.log(res.data);
-      if (res.data.code === 200) {
-        console.log("로그인");
-        axios.get("/").then((response) => {
-          localStorage.clear();
-          localStorage.setItem("member_id", response.data.member_id);
-          setCurrentUser(response.data.member_id);
-          this.goToMain();
-          alert("로그인 성공!");
-        });
-      }
+      console.log("member id : ", res.data.id);
+      let member_id = res.data.id;
+      // console.log("nickname : ", res.data.nickname);
+      localStorage.clear();
+      localStorage.setItem("id", res.data.id);
+      localStorage.setItem("nickname", res.data.nickname);
+      setCurrentMemberId(res.data.id);
+      id = member_id;
+      navigate(`/${id}`);
     });
   };
 
@@ -68,36 +65,6 @@ export default function Signin(setCurrentUser) {
       ? setButton(false)
       : setButton(true);
   };
-
-  // const signUp = () => {
-  //   fetch('http://http://localhost:3000/signup', {
-  //   method: 'POST',
-  //   body: JSON.stringify({
-  //     email: email,
-  //     password: password,
-  //   }),
-  // })
-  //   .then(response => response.json())
-  //   .then(result => console.log('결과: ', result));
-  // };
-
-  // const signIn = () => {
-  //   fetch('http://http://localhost:3000/signin', {
-  //     method: 'POST',
-  //     body: JSON.stringify({
-  //       email: email,
-  //       password: password,
-  //     }),
-  //   })
-  //   .then(response => {
-  //     if (response.message === 'SUCCESS') {
-  //       window.localStorage.setItem('token', response.access_token);
-  //       goToMain();
-  //     } else {
-  //       alert('이메일 또는 비밀번호가 일치하지 않습니다.')
-  //     }
-  //   })
-  // }
 
   return (
     <div className='Signin'>
@@ -153,7 +120,6 @@ export default function Signin(setCurrentUser) {
               fullWidth
               variant='contained'
               disabled={button}
-              onClick={goToMain}
               sx={{ mt: 3, mb: 2, bgcolor: "#f7e600", color: "success.main" }}
               // onClick={e => {
               //   if (myEmail == email) {
@@ -181,7 +147,7 @@ export default function Signin(setCurrentUser) {
                   underline='none'
                   component='button'
                   onClick={() => {
-                    navigate("/register");
+                    navigate("/signup");
                   }}
                   // to='/signup'
                 >

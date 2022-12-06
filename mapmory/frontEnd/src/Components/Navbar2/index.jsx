@@ -15,17 +15,17 @@ import {
   NavBtnLink,
 } from "./NavbarElements";
 
-const Navbar2 = ({ toggle }, setCurrentUser) => {
+const Navbar2 = ({ toggle }, setCurrentMemberId) => {
   const [scrollNav, setScrollNav] = useState(false);
   let [nickname, setNickname] = useState("");
 
   //닉네임 서버로 부터 받아와서 표출
-  useEffect(() => {
-    axios.get("").then((res) => {
-      console.log("nickname : ", res.data.nickname);
-      setNickname(res.data.nickname);
-    });
-  }, []);
+  // useEffect(() => {
+  //   axios.get("").then((res) => {
+  //     console.log("nickname : ", res.data.nickname);
+  //     setNickname(res.data.nickname);
+  //   });
+  // }, []);
 
   const changeNav = () => {
     if (window.scrollY >= 80) {
@@ -45,10 +45,11 @@ const Navbar2 = ({ toggle }, setCurrentUser) => {
 
   // 📛 로그아웃 처리
   const handleLogout = () => {
-    localStorage.removeItem("member_id");
-    setCurrentUser(null);
+    localStorage.removeItem("id");
+    localStorage.removeItem("nickname");
+    setCurrentMemberId(null);
   };
-
+  const username = localStorage.getItem("nickname");
   return (
     <>
       <IconContext.Provider value={{ color: "#fff" }} />
@@ -111,8 +112,8 @@ const Navbar2 = ({ toggle }, setCurrentUser) => {
             </NavItem>
           </NavMenu>
           <NavBtn>
-            <NavBtnLink>{setNickname}님 안녕하세요!</NavBtnLink>
-            <NavBtnLink to='/logout' onClick={handleLogout}>
+            <NavBtnLink>{username}님 안녕하세요!</NavBtnLink>
+            <NavBtnLink to='/' onClick={handleLogout}>
               로그아웃
             </NavBtnLink>
           </NavBtn>
