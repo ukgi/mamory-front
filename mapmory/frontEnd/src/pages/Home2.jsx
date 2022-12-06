@@ -11,7 +11,7 @@ import {
   homeObjThree,
 } from "../Components/InfoSection/Data";
 
-const Home2 = () => {
+const Home2 = (setCurrentUser) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => {
     setIsOpen(!isOpen);
@@ -22,7 +22,7 @@ const Home2 = () => {
   return (
     <>
       <Sidebar isOpen={isOpen} toggle={toggle} />
-      <Navbar2 toggle={toggle} />
+      <Navbar2 toggle={toggle} currentUser={setCurrentUser} />
       <HeroSection />
       <InfoSection {...homeObjOne} />
       <InfoSection {...homeObjTwo} />

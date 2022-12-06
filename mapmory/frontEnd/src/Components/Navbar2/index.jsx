@@ -15,7 +15,7 @@ import {
   NavBtnLink,
 } from "./NavbarElements";
 
-const Navbar2 = ({ toggle }) => {
+const Navbar2 = ({ toggle }, setCurrentUser) => {
   const [scrollNav, setScrollNav] = useState(false);
   let [nickname, setNickname] = useState("");
 
@@ -41,6 +41,12 @@ const Navbar2 = ({ toggle }) => {
 
   const toggleHome = () => {
     scroll.scrollToTop();
+  };
+
+  // 📛 로그아웃 처리
+  const handleLogout = () => {
+    localStorage.removeItem("member_id");
+    setCurrentUser(null);
   };
 
   return (
@@ -106,7 +112,9 @@ const Navbar2 = ({ toggle }) => {
           </NavMenu>
           <NavBtn>
             <NavBtnLink>{setNickname}님 안녕하세요!</NavBtnLink>
-            <NavBtnLink to='/logout'>로그아웃</NavBtnLink>
+            <NavBtnLink to='/logout' onClick={handleLogout}>
+              로그아웃
+            </NavBtnLink>
           </NavBtn>
         </NavbarContainer>
       </Nav>

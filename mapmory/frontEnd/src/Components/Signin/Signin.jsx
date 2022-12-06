@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 // import { useDispatch } from 'react-redux';
 import axios from "axios";
 
-export default function Signin() {
+export default function Signin(setCurrentUser) {
   let navigate = useNavigate();
   // const dispatch = useDispatch();
   let [email, setEmail] = useState("");
@@ -50,6 +50,7 @@ export default function Signin() {
         axios.get("/").then((response) => {
           localStorage.clear();
           localStorage.setItem("member_id", response.data.member_id);
+          setCurrentUser(response.data.member_id);
           this.goToMain();
           alert("로그인 성공!");
         });

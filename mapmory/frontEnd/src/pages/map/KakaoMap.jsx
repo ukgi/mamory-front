@@ -30,10 +30,8 @@ const cancelBtn = {
   fontSize: "2rem",
 };
 
-export default function KakaoMap() {
-  const currentUser = "chanuk";
-
-  const memberId = 123456;
+export default function KakaoMap(currentUser) {
+  const memberId = currentUser;
   // ✅ "작성하기" 버튼 클릭 -> 다이어리 폼으로 이동
   const [open, setOpen] = useState(false);
   const [mapCenter, setMapCenter] = useState({
@@ -99,8 +97,7 @@ export default function KakaoMap() {
 
   // ✅ 서버로부터 저장된 마커 데이터 가져오기
   useEffect(() => {
-    // `http://localhost:8000/${memberId}/markers`
-    fetch("data/markerPosition.json")
+    fetch(`http://localhost:8000/${memberId}/markers`)
       .then((response) => response.json())
       .then((data) => setMarkerList(data));
   }, []);
