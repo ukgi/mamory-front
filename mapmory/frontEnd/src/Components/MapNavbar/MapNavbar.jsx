@@ -2,8 +2,15 @@ import React from "react";
 import "./mapNavbar.css";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlaceIcon from "@mui/icons-material/Place";
+import { useNavigate } from "react-router-dom";
 
 export default function MapNavbar({ openSidebar }) {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("id");
+    localStorage.removeItem("nickname");
+    navigate("/");
+  };
   return (
     <div className='map-navbar'>
       <div className='burger'>
@@ -18,7 +25,9 @@ export default function MapNavbar({ openSidebar }) {
         MAPMORY
       </div>
       <div className='navBtn'>
-        <button className='Btn-logout'>로그아웃</button>
+        <button className='Btn-logout' onClick={handleLogout}>
+          로그아웃
+        </button>
       </div>
     </div>
   );

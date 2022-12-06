@@ -22,6 +22,7 @@ const HeroSection = () => {
   };
 
   const userName = localStorage.getItem("nickname");
+  const memberId = localStorage.getItem("id");
   return (
     <HeroContainer id='home'>
       <HeroBg>
@@ -35,7 +36,9 @@ const HeroSection = () => {
         </HeroP>
         <HeroBtnWrapper>
           <NavBtn>
-            {userName && <NavBtnLink to='/map'>지도로 가기</NavBtnLink>}
+            {userName && (
+              <NavBtnLink to={`/map/${memberId}`}>지도로 가기</NavBtnLink>
+            )}
             {!userName && <NavBtnLink to='/signin'>시작하기</NavBtnLink>}
           </NavBtn>
         </HeroBtnWrapper>

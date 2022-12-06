@@ -7,9 +7,11 @@ import Signin from "./Components/Signin/Signin";
 import Signup from "./Components/Signup/Signup";
 // import Logout from "./Components/Logout/Logout";
 import KakaoMap from "./pages/map/KakaoMap";
+import { useParams } from "react-router-dom";
 
 function App() {
   const [currentMemberId, setCurrentMemberId] = useState(null);
+  let { id } = useParams();
   return (
     <Router>
       <Routes>
@@ -22,7 +24,7 @@ function App() {
         <Route path='/signup' element={<Signup />} exact />
 
         <Route
-          path='/map'
+          path='/map/:id'
           element={<KakaoMap currentMemberId={currentMemberId} />}
           exact
         />

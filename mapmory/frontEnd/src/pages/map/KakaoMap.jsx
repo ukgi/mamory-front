@@ -31,7 +31,7 @@ const cancelBtn = {
 };
 
 export default function KakaoMap(currentMemberId) {
-  const memberId = currentMemberId;
+  const memberId = localStorage.getItem("id");
   // ✅ "작성하기" 버튼 클릭 -> 다이어리 폼으로 이동
   const [open, setOpen] = useState(false);
   const [mapCenter, setMapCenter] = useState({
@@ -63,7 +63,7 @@ export default function KakaoMap(currentMemberId) {
 
   // ✅ 마커 position 정보, 서버로 post 하기
   const submitMarkerPosition = async (wtmX, wtmY) => {
-    await fetch("http://localhost:8000/marker/new", {
+    await fetch("http://43.200.240.147:8000/marker/new", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export default function KakaoMap(currentMemberId) {
 
   // ✅ 서버로부터 저장된 마커 데이터 가져오기
   useEffect(() => {
-    fetch(`http://localhost:8000/${memberId}/markers`)
+    fetch(`http://43.200.240.147:8000/${memberId}/markers`)
       .then((response) => response.json())
       .then((data) => setMarkerList(data));
   }, []);
@@ -123,7 +123,7 @@ export default function KakaoMap(currentMemberId) {
     }
 
     await fetch(
-      `http://localhost:8000/${memberId}/marker/${currentMarkerId}/diary`,
+      `http://43.200.240.147:8000/${memberId}/marker/${currentMarkerId}/diary`,
       {
         method: "POST",
         cache: "no-cache",
@@ -216,8 +216,9 @@ export default function KakaoMap(currentMemberId) {
   const handleDiaryScreen = async (markerId) => {
     console.log(markerId);
     setCurrentMarkerId(markerId);
-    // `http://localhost:8000/${memberId}/marker/${markerId}/diary`
-    await fetch("data/diary.json")
+    await fetch(
+      `http://43.200.240.147:8000/${memberId}/marker/${markerId}/diary`
+    )
       .then((response) => response.json())
       .then((data) => setDiary(data))
       .catch((error) => console.log(error));
@@ -227,7 +228,7 @@ export default function KakaoMap(currentMemberId) {
   // 📛 마커 삭제
   const handleDeleteMarker = async () => {
     await fetch(
-      `http://localhost:8000/${memberId}/marker/${currentMarkerId}/diary`,
+      `http://43.200.240.147:8000/${memberId}/marker/${currentMarkerId}/diary`,
       {
         method: "DELETE",
       }

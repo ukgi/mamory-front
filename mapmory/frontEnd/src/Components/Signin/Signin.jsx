@@ -150,6 +150,9 @@ export default function Signin({ setCurrentMemberId }) {
                     navigate("/signup");
                   }}
                   // to='/signup'
+                  style={{
+                    fontSize: "20px",
+                  }}
                 >
                   계정 없음 가입해
                 </Link>
