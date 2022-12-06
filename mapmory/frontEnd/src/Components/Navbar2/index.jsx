@@ -113,7 +113,7 @@ const Navbar2 = ({ toggle }, setCurrentMemberId) => {
           </NavMenu>
           <NavBtn>
             <NavBtnLink>{username}님 안녕하세요!</NavBtnLink>
-            <NavBtnLink to='/mamory-front' onClick={handleLogout}>
+            <NavBtnLink to='/' onClick={handleLogout}>
               로그아웃
             </NavBtnLink>
           </NavBtn>
