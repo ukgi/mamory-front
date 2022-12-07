@@ -99,6 +99,8 @@ export default function Signup() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  id='password'
+                  type='password'
                   autoComplete='new-password'
                   name='password'
                   // label='Password'
