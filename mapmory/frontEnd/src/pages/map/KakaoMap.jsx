@@ -144,6 +144,7 @@ export default function KakaoMap(currentMemberId) {
       .catch((err) => {
         console.log(err);
       });
+    window.location.reload();
   };
 
   // ✅ 지도 더블 클릭 시, 마커 생성

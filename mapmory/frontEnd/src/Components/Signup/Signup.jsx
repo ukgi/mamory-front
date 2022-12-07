@@ -56,7 +56,7 @@ export default function Signup() {
 
   //유효성 검사
   const changeButton = () => {
-    email.includes("@") && password.length >= 6 && nickname.length >= 6
+    email.includes("@") && password.length >= 6 && nickname.length >= 4
       ? setButton(false)
       : setButton(true);
   };
