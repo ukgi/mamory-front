@@ -41,7 +41,7 @@ export default function Signin({ setCurrentMemberId }) {
     };
     console.log(body);
 
-    axios.post("http://43.200.240.147:8000/user/signin", body).then((res) => {
+    axios.post("/user/signin", body).then((res) => {
       console.log(res.data);
       console.log("member id : ", res.data.id);
       let member_id = res.data.id;
