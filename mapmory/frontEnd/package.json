@@ -59,5 +59,6 @@
   },
   "devDependencies": {
     "gh-pages": "^4.0.0"
-  }
+  },
+  "proxy": "http://43.200.240.147:8000"
 }
